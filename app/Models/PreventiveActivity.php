@@ -30,16 +30,16 @@ class PreventiveActivity extends Model
             'equipment_class_id' => 1
         ],
         [ 'activity'=>'Cambiar cables',
-            'equipment_class_id' => 2
+            'equipment_class_id' => 1
         ],
         [ 'activity'=>'Cambiar capacitor',
-            'equipment_class_id' => 2
+            'equipment_class_id' => 1
         ],
         [ 'activity'=>'Cambiar refreigerante',
-            'equipment_class_id' => 3
+            'equipment_class_id' => 1
         ],
         [ 'activity'=>'Retirar exceso de hielo',
-            'equipment_class_id' => 3
+            'equipment_class_id' => 1
         ],
     ];
 

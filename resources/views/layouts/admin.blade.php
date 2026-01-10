@@ -29,7 +29,7 @@
 <div class="container-admin fixed left-0 top-0 w-64 h-full bg-[#ffffff] p-4 z-50 sidebar-menu transition-transform border-r border-gray-300 overflow-y-auto no-scrollbar">
     <div class="flex">
         <img class="w-12 h-12 rounded-full" src="{{asset('image/logo/logo.jpeg')}}" alt="Logo Technic Service"/>
-        <h2 class="font-bold text-2xl text-gray-500">Technic Service</h2>
+        <h2 class="font-bold text-2xl text-gray-500">Ecling</h2>
     </div>
 
     <ul class="mt-4">

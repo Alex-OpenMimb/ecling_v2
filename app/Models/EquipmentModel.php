@@ -29,19 +29,19 @@ class EquipmentModel extends Model
         ],
         [
             'model'=> 'TT-508',
-            'equipment_class_id'=> 2,
+            'equipment_class_id'=> 1,
         ],
         [
             'model'=> 'TT-518',
-            'equipment_class_id'=> 2,
+            'equipment_class_id'=> 1,
         ],
         [
             'model'=> 'TSR-889',
-            'equipment_class_id'=> 3,
+            'equipment_class_id'=> 1,
         ],
         [
             'model'=> 'TTRR-558',
-            'equipment_class_id'=> 3,
+            'equipment_class_id'=> 1,
         ],
     ];
 

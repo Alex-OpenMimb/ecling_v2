@@ -19,7 +19,7 @@ class EquipmentClass extends Model
         'status',
     ];
 
-    const TYPE = ['Gas','Eléctrico','Refrigeración'];
+    const TYPE = ['Refrigeración'];
 
 
     //Relationships
