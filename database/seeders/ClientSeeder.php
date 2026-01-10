@@ -34,7 +34,7 @@ class ClientSeeder extends Seeder
                     'number_main'=> $number_main,
                     'nomenclature_second'=> 'Carrera',
                     'number'     => $number_main. '-'. rand(10, 1000) .  fake()->lexify('id-????'),
-                    'city_id'=>547
+                    'city_id'=>88
                 ]
             );
 
