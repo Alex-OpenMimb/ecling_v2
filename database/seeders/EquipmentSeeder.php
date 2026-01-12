@@ -62,11 +62,13 @@ class EquipmentSeeder extends Seeder
 
     protected function create_equipment_classes()
     {
-        foreach (EquipmentClass::TYPE AS $key => $value ){
-            EquipmentClass::create([
-                'name' =>$value,
-                'slug' => Str::slug($value,'-')
-            ]);
+        if( EquipmentClass::count() === 0 ){
+            foreach (EquipmentClass::TYPE AS $key => $value ){
+                EquipmentClass::create([
+                    'name' =>$value,
+                    'slug' => Str::slug($value,'-')
+                ]);
+            }
         }
     }
 
@@ -83,11 +85,13 @@ class EquipmentSeeder extends Seeder
 
     protected function create_models()
     {
-        foreach (EquipmentModel::MODEL AS $key => $value ){
-            EquipmentModel::create([
-                'model' =>  $value['model'],
-                'equipment_class_id' => $value['equipment_class_id']
-            ]);
+        if( EquipmentModel::count() === 0 ){
+            foreach (EquipmentModel::MODEL AS $key => $value ){
+                EquipmentModel::create([
+                    'model' =>  $value['model'],
+                    'equipment_class_id' => $value['equipment_class_id']
+                ]);
+            }
         }
     }
 

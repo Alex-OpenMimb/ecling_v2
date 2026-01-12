@@ -126,7 +126,7 @@ return new class extends Migration
             $table->unsignedBigInteger('ampere_id')->nullable();
             $table->foreign('ampere_id')->references('id')->on('amperes');
 
-            $columns    = ['equipment_model_id','equipment_class_id','brand_id'
+            $columns    = ['equipment_model_id','brand_id'
                 ,'volt_id','ampere_id' ];
             $table->unique( $columns,'idx_equipment' );
 
