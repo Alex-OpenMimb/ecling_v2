@@ -184,7 +184,7 @@ class FormClientEquipment   extends  Component
             }else{
                 $path = 'image/client_equipment/';
             }
-            return $photo_file->storeAs($path. $id , $photo_type .'.'.$extension, 'space');
+            return $photo_file->storeAs($path. $id , $photo_type .'.'.$extension, 'public');
         }
 
 

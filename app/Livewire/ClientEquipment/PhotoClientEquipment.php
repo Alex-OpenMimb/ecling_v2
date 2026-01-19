@@ -32,7 +32,7 @@ class PhotoClientEquipment extends Component
 
     public function download_photo( $type )
     {
-         $disk = Storage::disk('space');
+         $disk = Storage::disk('public');
          $file_path = null;
          if( $type === 'perimeter' ){
              $file_path = $this->client_equipment->perimeter_photo;
