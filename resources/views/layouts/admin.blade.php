@@ -163,7 +163,7 @@
             </li>
         @endcan --}}
 
-      {{--  @can('admin-preventive')
+        @can('admin-preventive')
             <li class="mb-1 group">
                 <a href="" class="flex font-semibold items-center py-2 px-4 text-gray-500 hover:bg-blue-200 hover:text-blue-800 rounded-md group-[.active]:bg-gray-800 group-[.active]:text-white group-[.selected]:bg-blue-200 group-[.selected]:text-blue-800 sidebar-dropdown-toggle">
                     <i class='bx bx-wrench  mr-3 text-lg'></i>
@@ -179,7 +179,7 @@
                     </li>
                 </ul>
             </li>
-        @endcan --}}
+        @endcan
 
 
         @can('admin.schedule')

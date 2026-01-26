@@ -69,7 +69,7 @@ class FormPreventiveRoutine  extends Component
 
         $routine_validator = $this->routine_validator();
         if( $routine_validator ){
-            return toastr()->error( 'El equipo o la actividad seleccionada ya está en uso por: '. $routine_validator .'. Elija otro equipo o actividad.', 'Error!');
+            return toastr()->error( 'Las activiades y dias utilizadas ya están en uso por : '. $routine_validator .'. Elija actividad o frecuencia.', 'Error!');
         }
 
         if($this->id){
@@ -108,7 +108,7 @@ class FormPreventiveRoutine  extends Component
             $this->update_equipments();
         }else{
 
-            $this->store_equipments( $preventive_routine->id );
+
             $this->store_activities( $preventive_routine->id );
             $this->assign_equipment();
         }
@@ -142,24 +142,12 @@ class FormPreventiveRoutine  extends Component
     protected function validate_check()
     {
         $error_message = '';
-        if(empty($this->equipments_check_inputs) && empty($this->activities_check_inputs) )  return 'Oops! Selecciona al menos un equipo y una actividad!';
         if(empty($this->activities_check_inputs)  ) return 'Oops! Selecciona al menos una actividad!';
-        if(empty($this->equipments_check_inputs)  ) return 'Oops! Selecciona al menos un equipo!';
         return $error_message;
 
     }
 
-    protected function store_equipments( $preventive_routine_id )
-    {
-        $equipments = $this->equipments_check_inputs;
-        foreach ($equipments as $index => $equipment_id)
-        {
-            PreventiveRoutineEquipment::create([
-                'equipment_id'=> $equipment_id,
-                'preventive_routine_id'=> $preventive_routine_id
-            ]);
-        }
-    }
+
 
 
     protected function assign_equipment()
@@ -209,7 +197,7 @@ class FormPreventiveRoutine  extends Component
     protected function update_equipments()
     {
         PreventiveRoutineEquipment::where('preventive_routine_id',$this->id)->delete();
-        $this->store_equipments($this->id);
+
     }
 
     protected function update_activities()

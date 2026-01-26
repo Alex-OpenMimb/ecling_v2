@@ -11,11 +11,9 @@ class ServicePreventiveRoutine
 
     public  static function createOrUpdated( $validator_data)
     {
-        $equipment_list = $validator_data['equipments'];
         $activities_list = $validator_data['activities'];
         $routine_id = $validator_data['routine_id'];
 
-        $equipment_list  = array_map('intval', $equipment_list );
         $activities_list = array_map('intval', $activities_list );
 
         $routines        = self::get_routines($routine_id);
@@ -23,15 +21,12 @@ class ServicePreventiveRoutine
         $result          =  false;
         foreach ($routines as  $routine => $routine_id){
             ///Get equipments and activities by routine id.
-            $found_equipments =   self::found_equipments( $routine_id );
             $found_activities =  self::found_activities( $routine_id );
 
-            sort( $equipment_list );
-            sort( $found_equipments );
             sort( $activities_list );
             sort( $found_activities );
 
-            if( $equipment_list === $found_equipments && $activities_list ===  $found_activities ){
+            if( $activities_list ===  $found_activities ){
                 $result = $routine;
                 break;
             }

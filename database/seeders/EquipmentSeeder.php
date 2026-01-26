@@ -24,16 +24,18 @@ class EquipmentSeeder extends Seeder
      */
     public function run(): void
     {
-        $this->create_location();
-        $this->create_brands();
+
         $this->create_equipment_classes();
-        $this->create_volts();
-        $this->create_ampere();
-        $this->create_models();
-        $this->create_equipments();
-        $this->create_materials();
-        $this->create_spare_parts();
-        $this->create_units();
+
+//        $this->create_location();
+//        $this->create_brands();
+//        $this->create_volts();
+//        $this->create_ampere();
+//        $this->create_models();
+//        $this->create_equipments();
+//        $this->create_materials();
+//        $this->create_spare_parts();
+//        $this->create_units();
     }
 
 
