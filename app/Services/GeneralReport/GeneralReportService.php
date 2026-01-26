@@ -122,7 +122,7 @@ class GeneralReportService
         $signature_path = $path . $id .'/signature.png';
         $general_report->receptor_signature = $signature_path;
         $general_report->save();
-        Storage::disk('space')->put($signature_path, $signature_data);
+        Storage::disk('public')->put($signature_path, $signature_data);
     }
 
     public  static function  storage_image( $data )
@@ -155,7 +155,7 @@ class GeneralReportService
             if ($file) {
                 $extension = $file->getClientOriginalExtension() ?: $file->extension() ?: 'png';
                 $filename = 'photo_' . Str::uuid() . '.' . $extension;
-                $storedPath = $file->storeAs($basePath, $filename, 'space');
+                $storedPath = $file->storeAs($basePath, $filename, 'public');
             }
 
             if ($photoId) {
