@@ -17,14 +17,15 @@
             <!-- block 1 -->
             <div class="md:flex md:items-center mb-4">
 
-                <div class="md:w-1/3 pr-0 md:pr-4 mb-4 md:mb-0">
+                <div class="md:w-1/2 pr-0 md:pr-4 mb-4 md:mb-0">
                     <div class="flex">
                         <label for="equipment_class_id" class="block text-gray-700 font-bold mb-2" title="">Clase de equipo*:</label>
                     </div>
                     <select id="equipment_class_id" wire:model="equipment_class_id" name="equipment_class_id" class="mb-2 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400  dark:focus:ring-blue-500 dark:focus:border-blue-500">
                         <option value="">Seleccionar</option>
-                        <option value="1">Clase 1</option>
-                        <option value="2">Clase 2</option>
+                        @foreach($equipment_class_lists as $class)
+                            <option wire:key="{{$class->id}}" value="{{$class->id}}">{{$class->name}}</option>
+                        @endforeach
                     </select>
                     <div class="h-4">
                         @error('equipment_class_id') <span class="text-red-400 text-sm">{{ $message }}</span> @enderror
@@ -34,20 +35,13 @@
 
                 </div>
 
-                <div class="md:w-1/4 pr-0 md:pr-4 mb-4 md:mb-0">
+                <div class="md:w-1/2 pr-0 md:pr-4 mb-4 md:mb-0">
                     <label for="name" class="block text-gray-700 font-bold mb-2">Nombre:</label>
                     <input type="text" id="name" wire:model="name" name="name" class="focus:outline-none bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500 mb-2">
                     <div class="h-4">
                         @error('name') <span class="text-red-400 text-sm">{{ $message }}</span> @enderror
                     </div>
                 </div>
-                <div class="md:w-1/3 pr-0 md:pr-4 mb-4 md:mb-0">
-                    <label for="serial" class="block text-gray-700 font-bold mb-2">Serial*:</label>
-                    <input type="text" id="serial" name="serial" class="focus:outline-none bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full  p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400  dark:focus:ring-blue-500 dark:focus:border-blue-500  mb-2">
-                    <div class="h-4">
-                    </div>
-                </div>
-
             </div>
             <!-- block 1.5 - Campos de especificaciones -->
             <div class="md:flex md:items-center mb-4">
@@ -97,8 +91,9 @@
 
                 <div  class="md:w-1/2 pr-0 md:pr-4 mb-4 md:mb-0  mr-2">
                     <label for="observations" class="block text-gray-700 font-bold mb-2">Observaciones:</label>
-                    <textarea name="observations" class="resize-none focus:outline-none bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full  p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400  dark:focus:ring-blue-500 dark:focus:border-blue-500  mb-2"></textarea>
+                    <textarea wire:model="observations" name="observations" class="resize-none focus:outline-none bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full  p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400  dark:focus:ring-blue-500 dark:focus:border-blue-500  mb-2"></textarea>
                     <div class="h-4">
+                        @error('observations') <span class="text-red-400 text-sm">{{ $message }}</span> @enderror
                     </div>
                 </div>
 
@@ -110,32 +105,76 @@
             <div class="md:flex md:items-center mb-4 items-center">
 
                 <div class="md:w-1/2 pr-0 md:pr-4 mb-4 md:mb-0">
-                    <div class="flex gap-2">
-                        <label for="" class="block text-gray-700 font-bold mb-2" title="">Foto de la placa:</label>
+                    <div class="flex gap-2 items-center">
+                        <label for="" class="block text-gray-700 font-bold mb-2" title="">Foto 1:</label>
+                        @if($plate_photo_flag || $plate_photo)
+                            <x-icons.check></x-icons.check>
+                        @else
+                            <x-icons.x-circle></x-icons.x-circle>
+                        @endif
                     </div>
-                    <label for="plate_file_input" class="block flex items-center cursor-pointer bg-blue-100 text-blue-700 px-4 py-2 rounded-md border border-blue-200 hover:bg-blue-200 hover:text-blue-800 transition duration-300">
-                        <span>Cargar foto</span>
-                        <span id="plate_file_name" class="ml-2"></span>
-                        <input id="plate_file_input" name="plate_photo" type="file"
-                               class="hidden"
-                        >
-                    </label>
+                    <div x-data="{ fileName: '', isChecked: @entangle('plate_photo_flag') }">
+                        <label for="plate_file_input" class="block flex items-center cursor-pointer bg-blue-100 text-blue-700 px-4 py-2 rounded-md border border-blue-200 hover:bg-blue-200 hover:text-blue-800 transition duration-300">
+                            <span>Cargar foto</span>
+                            <span x-text="fileName ? fileName : ''" class="ml-2 truncate"></span>
+                            <input id="plate_file_input" wire:model.live="plate_photo" name="plate_photo" type="file"
+                                   class="hidden"
+                                   x-on:change="
+                                       if ($event.target.files.length > 0) {
+                                           fileName = $event.target.files[0].name;
+                                           isChecked = true;
+                                       }
+                                   "
+                            >
+                        </label>
+                    </div>
+                    <div class="mt-2">
+                        <label for="photo1_title_photo_id" class="block text-gray-700 font-bold mb-2">Título de la foto:</label>
+                        <select id="photo1_title_photo_id" wire:model="photo1_title_photo_id" name="photo1_title_photo_id" class="mb-2 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                            <option value="">Seleccionar</option>
+                            @foreach($title_photo_options as $titlePhoto)
+                                <option wire:key="photo1-{{$titlePhoto->id}}" value="{{$titlePhoto->id}}">{{$titlePhoto->title}}</option>
+                            @endforeach
+                        </select>
+                    </div>
                     <div class="h-4">
                     </div>
                 </div>
 
 
                 <div class="md:w-1/2 pr-0 md:pr-4 mb-4 md:mb-0">
-                    <div class="flex gap-2">
-                        <label for="" class="block text-gray-700 font-bold mb-2" title="">Foto Panorámica:</label>
+                    <div class="flex gap-2 items-center">
+                        <label for="" class="block text-gray-700 font-bold mb-2" title="">Foto 2:</label>
+                        @if($perimeter_photo_flag || $perimeter_photo)
+                            <x-icons.check></x-icons.check>
+                        @else
+                            <x-icons.x-circle></x-icons.x-circle>
+                        @endif
                     </div>
-                       <label for="perimeter_file_input" class="block flex items-center cursor-pointer bg-blue-100 text-blue-700 px-4 py-2 rounded-md border border-blue-200 hover:bg-blue-200 hover:text-blue-800 transition duration-300">
-                        <span>Cargar foto</span>
-                        <span id="perimeter_file_name" class="ml-2"></span>
-                        <input id="perimeter_file_input" name="perimeter_photo" type="file"
-                               class="hidden"
-                        >
-                    </label>
+                    <div x-data="{ fileName: '', isChecked: @entangle('perimeter_photo_flag') }">
+                        <label for="perimeter_file_input" class="block flex items-center cursor-pointer bg-blue-100 text-blue-700 px-4 py-2 rounded-md border border-blue-200 hover:bg-blue-200 hover:text-blue-800 transition duration-300">
+                            <span>Cargar foto</span>
+                            <span x-text="fileName ? fileName : ''" class="ml-2 truncate"></span>
+                            <input id="perimeter_file_input" wire:model.live="perimeter_photo" name="perimeter_photo" type="file"
+                                   class="hidden"
+                                   x-on:change="
+                                       if ($event.target.files.length > 0) {
+                                           fileName = $event.target.files[0].name;
+                                           isChecked = true;
+                                       }
+                                   "
+                            >
+                        </label>
+                    </div>
+                    <div class="mt-2">
+                        <label for="photo2_title_photo_id" class="block text-gray-700 font-bold mb-2">Título de la foto:</label>
+                        <select id="photo2_title_photo_id" wire:model="photo2_title_photo_id" name="photo2_title_photo_id" class="mb-2 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                            <option value="">Seleccionar</option>
+                            @foreach($title_photo_options as $titlePhoto)
+                                <option wire:key="photo2-{{$titlePhoto->id}}" value="{{$titlePhoto->id}}">{{$titlePhoto->title}}</option>
+                            @endforeach
+                        </select>
+                    </div>
 
                     <div class="h-4">
                     </div>

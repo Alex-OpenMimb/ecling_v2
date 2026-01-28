@@ -20,8 +20,6 @@ class ClientsEquipments extends Model
             'status',
             'preventive_services',
             'preventive_services_first', //Flag to validate if the preventive routine has assigned already first time
-            'plate_photo',
-            'perimeter_photo',
             'equipment_id', //Relations many has many
             'client_id', //Relations many has many
             'location_id',

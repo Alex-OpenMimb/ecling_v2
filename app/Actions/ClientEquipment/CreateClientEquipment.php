@@ -2,50 +2,33 @@
 
 namespace App\Actions\ClientEquipment;
 
-use App\Models\Ampere;
-use App\Models\Brand;
+use App\Actions\Helpers\StorePhoto;
+use App\Helper\HandelSerial;
+use App\Models\ClientsEquipments;
 use App\Models\Equipment;
-use App\Models\EquipmentModel;
 use App\Models\Location;
-use App\Models\Volt;
-use Illuminate\Support\Str;
+use Illuminate\Http\UploadedFile;
 use Lorisleiva\Actions\Concerns\AsAction;
 
 class CreateClientEquipment
 {
     use AsAction;
 
-    public function handle($data)
+    public function handle(Equipment $equipment, array $data)
     {
-        $brand = $this->createOrFindBrand($data['brand']);
+        // Crear o buscar Location
         $location = $this->createOrFindLocation($data['location']);
-        $volt = $this->createOrFindVolt((float) $data['voltage']);
-        $ampere = $this->createOrFindAmpere((float) $data['amperage']);
-        $equipmentModel = $this->createOrFindEquipmentModel($data['model'], $data['equipment_class_id']);
-        
-        $equipmentData = [
-            'name' => $data['name'],
-            'equipment_class_id' => $data['equipment_class_id'],
-            'brand' => $brand,
-            'volt' => $volt,
-            'ampere' => $ampere,
-            'equipmentModel' => $equipmentModel,
-        ];
-        
-        $equipment = $this->createEquipment($equipmentData);
+
+        // Crear el registro en clients_has_equipments
+        $clientEquipment = $this->createClientEquipment($equipment, $location, $data);
+
+        // Guardar las fotos si existen
+        $this->storePhotos($clientEquipment, $data);
 
         return [
-            'equipment' => $equipment,
+            'client_equipment' => $clientEquipment,
             'location' => $location,
         ];
-    }
-
-    protected function createOrFindBrand(string $brandName): Brand
-    {
-        return Brand::firstOrCreate(
-            ['name' => $brandName],
-            ['status' => true]
-        );
     }
 
     protected function createOrFindLocation(string $locationName): Location
@@ -56,59 +39,53 @@ class CreateClientEquipment
         );
     }
 
-    protected function createOrFindVolt(float $voltage): Volt
-    {
-        return Volt::firstOrCreate(
-            ['volt_measurement' => $voltage],
-            [
-                'unit' => 'Voltios',
-                'status' => true
-            ]
-        );
-    }
-
-    protected function createOrFindAmpere(float $amperage): Ampere
-    {
-        return Ampere::firstOrCreate(
-            ['amperage_measurement' => $amperage],
-            [
-                'unit' => 'Amperios',
-                'status' => true
-            ]
-        );
-    }
-
-    protected function createOrFindEquipmentModel(string $model, int $equipmentClassId): EquipmentModel
-    {
-        return EquipmentModel::firstOrCreate(
-            [
-                'model' => $model,
-                'equipment_class_id' => $equipmentClassId
-            ],
-            ['status' => true]
-        );
-    }
-
-    protected function createEquipment(array $data): Equipment
+    protected function createClientEquipment(Equipment $equipment, Location $location, array $data): ClientsEquipments
     {
         [
-            'name' => $name,
+            'observations' => $observations,
+            'client_id' => $clientId,
+            'headquarter_id' => $headquarterId,
             'equipment_class_id' => $equipmentClassId,
-            'brand' => $brand,
-            'volt' => $volt,
-            'ampere' => $ampere,
-            'equipmentModel' => $equipmentModel,
         ] = $data;
 
-        return Equipment::create([
-            'name' => $name,
-            'slug' => Str::slug($name, '-'),
-            'equipment_model_id' => $equipmentModel->id,
-            'equipment_class_id' => $equipmentClassId,
-            'brand_id' => $brand->id,
-            'volt_id' => $volt->id,
-            'ampere_id' => $ampere->id,
+        return ClientsEquipments::create([
+            'internal_id' => HandelSerial::build_equipment_serial('clients_has_equipments', $equipmentClassId),
+            'observations' => $observations,
             'status' => true,
+            'preventive_services' => false,
+            'preventive_services_first' => false,
+            'equipment_id' => $equipment->id,
+            'client_id' => $clientId,
+            'location_id' => $location->id,
+            'headquarter_id' => $headquarterId,
+            'schedule_assigned' => false,
         ]);
+    }
+
+    protected function storePhotos(ClientsEquipments $clientEquipment, array $data): void
+    {
+        // Guardar foto 1 (plate_photo) si existe
+        if (isset($data['plate_photo']) && $data['plate_photo'] instanceof UploadedFile) {
+            $titlePhotoId = !empty($data['photo1_title_photo_id']) ? (int) $data['photo1_title_photo_id'] : null;
+            $photoData = [
+                'file' => $data['plate_photo'],
+                'title_photo_id' => $titlePhotoId,
+                'model' => $clientEquipment,
+                'base_path' => 'image/client_equipment',
+            ];
+            StorePhoto::run($photoData);
+        }
+
+        // Guardar foto 2 (perimeter_photo) si existe
+        if (isset($data['perimeter_photo']) && $data['perimeter_photo'] instanceof UploadedFile) {
+            $titlePhotoId = !empty($data['photo2_title_photo_id']) ? (int) $data['photo2_title_photo_id'] : null;
+            $photoData = [
+                'file' => $data['perimeter_photo'],
+                'title_photo_id' => $titlePhotoId,
+                'model' => $clientEquipment,
+                'base_path' => 'image/client_equipment',
+            ];
+            StorePhoto::run($photoData);
+        }
     }
 }
