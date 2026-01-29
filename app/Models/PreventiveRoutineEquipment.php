@@ -14,7 +14,8 @@ class PreventiveRoutineEquipment extends Model
     protected $table = 'preventive_routines_equipments';
     protected $fillable = [
         'equipment_id',
-        'preventive_routine_id'
+        'preventive_routine_id',
+        'custom_frequency'
 
     ];
 }

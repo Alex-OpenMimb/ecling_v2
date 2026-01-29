@@ -61,6 +61,7 @@ return new class extends Migration
             $table->unsignedBigInteger('preventive_routine_id');
             $table->foreign('preventive_routine_id')->references('id')->on('preventive_routines');
 
+            $table->integer('custom_frequency')->nullable();
             $table->timestamps();
 
         });

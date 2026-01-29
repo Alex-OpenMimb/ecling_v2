@@ -8,17 +8,13 @@ use Illuminate\Console\Command;
 
 class ScheduleService extends Command
 {
-    protected $signature = 'schedule:service {id : ID del equipo del cliente (clients_has_equipments)}';
+    protected $signature = 'schedule:service';
 
     protected $description = 'Crea el cronograma para un equipo del cliente usando ServicesSchedule::create_schedule';
 
     public function handle(): int
     {
-        $id = $this->argument('id');
-        if (! is_numeric($id)) {
-            $this->error('El ID debe ser numérico.');
-            return self::FAILURE;
-        }
+        $id = 2;
 
         $clientEquipment = ClientsEquipments::find($id);
         if (! $clientEquipment) {
@@ -26,7 +22,7 @@ class ScheduleService extends Command
             return self::FAILURE;
         }
 
-        ServicesSchedule::create_schedule($clientEquipment);
+        ServicesSchedule::create_schedule($clientEquipment,2);
         $this->info("Cronograma creado para el equipo del cliente ID {$id}.");
         return self::SUCCESS;
     }

@@ -4,6 +4,7 @@ namespace App\Livewire\ClientEquipment;
 
 use App\Actions\ClientEquipment\CreateClientEquipment;
 use App\Actions\Equipment\CreateEquipment;
+use App\Actions\PreventiveRoutineEquipment\CreatePreventiveRoutineEquipment;
 use App\Helper\GeneralHelper;
 use App\Helper\HandelSerial;
 use App\Models\Client;
@@ -11,6 +12,7 @@ use App\Models\ClientsEquipments;
 use App\Models\EquipmentClass;
 use App\Models\Headquarter;
 use App\Models\Location;
+use App\Models\PreventiveRoutine;
 use App\Models\TitlePhoto;
 use App\Services\Equipment\DataEquipment;
 use App\Services\Equipment\EquipmentService;
@@ -51,6 +53,9 @@ class FormClientEquipment   extends  Component
         public $perimeter_photo;
         public $plate_photo_flag = false;
         public $perimeter_photo_flag = false;
+        public $preventive_routine_id;
+        public $custom_frequency;
+        public $preventive_routine_lists = [];
 
         public function mount(Headquarter  $headquarter, Client $client, ClientsEquipments $client_equipment )
         {
@@ -59,6 +64,7 @@ class FormClientEquipment   extends  Component
             $this->client_equipment = $client_equipment;
             $this->get_equipment_class();
             $this->get_title_photos();
+            $this->get_preventive_routines();
         }
 
         protected function get_equipment_class()
@@ -74,6 +80,14 @@ class FormClientEquipment   extends  Component
                 ->where('status',true)
                 ->get();
         }
+
+        protected function get_preventive_routines()
+        {
+            $this->preventive_routine_lists = PreventiveRoutine::select('id','name')
+                ->where('status',true)
+                ->get();
+        }
+
         public function render()
         {
             return view('livewire.clientEquipment.form');
@@ -111,7 +125,16 @@ class FormClientEquipment   extends  Component
                 'photo2_title_photo_id' => $this->photo2_title_photo_id,
             ];
 
-            CreateClientEquipment::run($equipment, $clientEquipmentData);
+            $result = CreateClientEquipment::run($equipment, $clientEquipmentData);
+            $clientEquipment = $result['client_equipment'];
+
+            CreatePreventiveRoutineEquipment::run([
+                'equipment_client' => $clientEquipment,
+                'routine_id' => (int) $this->preventive_routine_id,
+                'custom_frequency' => $this->custom_frequency !== '' && $this->custom_frequency !== null
+                    ? (int) $this->custom_frequency
+                    : null,
+            ]);
 
             toastr()->success('El equipo se ha creado con éxito!', 'Felicitaciones');
             return redirect()->route('admin.clients-equipments', [
@@ -130,6 +153,8 @@ class FormClientEquipment   extends  Component
                 'amperage' => 'required|numeric|min:0',
                 'model' => 'required|string',
                 'equipment_class_id' => 'required|exists:equipment_classes,id',
+                'preventive_routine_id' => 'required|exists:preventive_routines,id',
+                'custom_frequency' => 'nullable|numeric|min:0',
             ];
         }
 
@@ -153,6 +178,10 @@ class FormClientEquipment   extends  Component
                 'model.string' => 'El modelo debe ser texto.',
                 'equipment_class_id.required' => 'La clase de equipo es requerida.',
                 'equipment_class_id.exists' => 'La clase de equipo seleccionada no es válida.',
+                'preventive_routine_id.required' => 'Debe seleccionar una rutina preventiva.',
+                'preventive_routine_id.exists' => 'La rutina seleccionada no es válida.',
+                'custom_frequency.numeric' => 'La frecuencia personalizada debe ser un número.',
+                'custom_frequency.min' => 'La frecuencia personalizada debe ser mayor o igual a 0.',
             ];
         }
 
