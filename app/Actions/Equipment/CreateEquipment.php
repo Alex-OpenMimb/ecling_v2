@@ -30,6 +30,7 @@ class CreateEquipment
             'volt' => $volt,
             'ampere' => $ampere,
             'equipmentModel' => $equipmentModel,
+            'asset_assignment' => $data['asset_assignment'],
         ];
 
         $equipment = $this->createEquipment($equipmentData);
@@ -98,6 +99,7 @@ class CreateEquipment
             'volt' => $volt,
             'ampere' => $ampere,
             'equipmentModel' => $equipmentModel,
+            'asset_assignment' => $assetAssignment,
         ] = $data;
 
         return Equipment::create([
@@ -109,6 +111,7 @@ class CreateEquipment
             'volt_id' => $volt->id,
             'ampere_id' => $ampere->id,
             'status' => true,
+            'asset_assignment' => $assetAssignment,
         ]);
     }
 }

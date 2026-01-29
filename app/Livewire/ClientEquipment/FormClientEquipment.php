@@ -9,6 +9,7 @@ use App\Helper\GeneralHelper;
 use App\Helper\HandelSerial;
 use App\Models\Client;
 use App\Models\ClientsEquipments;
+use App\Models\Equipment;
 use App\Models\EquipmentClass;
 use App\Models\Headquarter;
 use App\Models\Location;
@@ -107,6 +108,7 @@ class FormClientEquipment   extends  Component
                 'amperage' => $this->amperage,
                 'model' => $this->model,
                 'equipment_class_id' => $this->equipment_class_id,
+                'asset_assignment' => true,
             ];
 
             $equipmentResult = CreateEquipment::run($equipmentData);
@@ -126,21 +128,36 @@ class FormClientEquipment   extends  Component
             ];
 
             $result = CreateClientEquipment::run($equipment, $clientEquipmentData);
+
             $clientEquipment = $result['client_equipment'];
 
-            CreatePreventiveRoutineEquipment::run([
-                'equipment_client' => $clientEquipment,
-                'routine_id' => (int) $this->preventive_routine_id,
-                'custom_frequency' => $this->custom_frequency !== '' && $this->custom_frequency !== null
-                    ? (int) $this->custom_frequency
-                    : null,
-            ]);
+            if( $this->preventive_routine_id  ){
+                CreatePreventiveRoutineEquipment::run([
+                    'equipment_client' => $clientEquipment,
+                    'routine_id' => (int) $this->preventive_routine_id,
+                    'custom_frequency' => $this->custom_frequency !== '' && $this->custom_frequency !== null
+                        ? (int) $this->custom_frequency
+                        : null,
+                ]);
+
+                $this->markPreventiveRoutineAssigned($equipment, $clientEquipment);
+            }
+
 
             toastr()->success('El equipo se ha creado con éxito!', 'Felicitaciones');
             return redirect()->route('admin.clients-equipments', [
                 'client' => $this->client->slug,
                 'headquarter' => $this->headquarter->slug
             ]);
+        }
+
+        protected function markPreventiveRoutineAssigned(Equipment $equipment, ClientsEquipments $clientEquipment): void
+        {
+            $equipment->routine_assignment = true;
+            $clientEquipment->preventive_services = true;
+            $clientEquipment->preventive_services_first = true;
+            $equipment->save();
+            $clientEquipment->save();
         }
 
         public function rules()
@@ -153,7 +170,7 @@ class FormClientEquipment   extends  Component
                 'amperage' => 'required|numeric|min:0',
                 'model' => 'required|string',
                 'equipment_class_id' => 'required|exists:equipment_classes,id',
-                'preventive_routine_id' => 'required|exists:preventive_routines,id',
+                'preventive_routine_id' => 'nullable|exists:preventive_routines,id',
                 'custom_frequency' => 'nullable|numeric|min:0',
             ];
         }
