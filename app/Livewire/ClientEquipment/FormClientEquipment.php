@@ -133,8 +133,28 @@ class FormClientEquipment   extends  Component
             ];
         }
 
-
-
+        public function messages()
+        {
+            return [
+                'name.required' => 'El nombre es requerido.',
+                'name.string' => 'El nombre debe ser texto.',
+                'name.min' => 'El nombre debe tener al menos 3 caracteres.',
+                'brand.required' => 'La marca es requerida.',
+                'brand.string' => 'La marca debe ser texto.',
+                'location.required' => 'La ubicación es requerida.',
+                'location.string' => 'La ubicación debe ser texto.',
+                'voltage.required' => 'Los voltios son requeridos.',
+                'voltage.numeric' => 'Los voltios deben ser un número.',
+                'voltage.min' => 'Los voltios deben ser mayor o igual a 0.',
+                'amperage.required' => 'Los amperios son requeridos.',
+                'amperage.numeric' => 'Los amperios deben ser un número.',
+                'amperage.min' => 'Los amperios deben ser mayor o igual a 0.',
+                'model.required' => 'El modelo es requerido.',
+                'model.string' => 'El modelo debe ser texto.',
+                'equipment_class_id.required' => 'La clase de equipo es requerida.',
+                'equipment_class_id.exists' => 'La clase de equipo seleccionada no es válida.',
+            ];
+        }
 
 
 
