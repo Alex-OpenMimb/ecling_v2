@@ -27,8 +27,8 @@ class ProfileUser extends Component
     public function mount()
     {
         $user = auth()->user();
-        //Get url of image from digital ocean
-        $this->urlImage =  $user->url_image ? GeneralHelper::getImageUrl( $user->url_image ) :null;
+        //Get url of image from local storage
+        $this->urlImage =  $user->url_image ? asset('storage/' . $user->url_image) : null;
         $this->fill(
             $user->only( 'name','phone','email','id','password','slug'),
         );
@@ -99,10 +99,12 @@ class ProfileUser extends Component
         ]);
 
         $extension = $this->image->extension();
-        $path = $this->image->storeAs('image/profile',$this->id.'.'.$extension,'space');
+        $path = $this->image->storeAs('image/profile',$this->id.'.'.$extension,'public');
+
         $user->update(['url_image' => $path]);
-        //Get url of image from digital ocean
-        $this->urlImage =  GeneralHelper::getImageUrl( $path );
+        //Get url of image from local storage
+
+        $this->urlImage =  asset('storage/' . $path);
         toastr()->success('Foto  actualizada con éxito!', 'Felicitaciones');
 
         $this->dispatch('reload');

@@ -13,25 +13,24 @@ use Illuminate\Support\Facades\DB;
 
 class ServicesSchedule
 {
-    public static function create_schedule( $client_equipment )
+    public static function create_schedule( $client_equipment, $routine_id, $custom_frequency = null )
     {
 
         $id = $client_equipment->id;
         $equipment_id = $client_equipment->equipment_id;
-        $routines   = self::get_routines( $equipment_id );
-
+        $routines   = self::get_routines_by_id( $routine_id );
         $now = Carbon::now()->addDays(0);
         $last_date = $now;
         foreach ( $routines as $routine ){
-
-            $nex_date = $now->copy()->addMonths($routine->frequency)->format('Y-m-d');
+            $frequency = $custom_frequency ?? $routine->frequency;
+            $nex_date = $now->copy()->addDays($frequency)->format('Y-m-d');
             $days = $last_date->diffInDays( $nex_date );
             $status = self::handel_status( $days );
             \App\Models\Schedule::create([
                 'last_date' => $last_date,
                 'next_date' => $nex_date,
                 'days' => $days,
-                'frequency' => $routine->frequency,
+                'frequency' => $frequency,
                 'status' => $status,
                 'preventive_routine_id' => $routine->id,
                 'client_has_equipment_id' => $id,
@@ -42,6 +41,11 @@ class ServicesSchedule
         $client_equipment->schedule_assigned = 1;
         $client_equipment->preventive_services_first = 1;
         $client_equipment->save();
+    }
+
+    public static function get_routines_by_id( $routine_id )
+    {
+        return PreventiveRoutine::where('id',$routine_id)->get();
     }
 
     public static function get_routines( $equipment_id )

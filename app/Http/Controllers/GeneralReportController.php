@@ -206,7 +206,7 @@ class GeneralReportController extends Controller
 
     protected function store_local_image( $receptor_signature, $local_path )
     {
-        $disk =  Storage::disk('space');
+        $disk =  Storage::disk('public');
         $signature_file =   $disk->get( $receptor_signature );
         Storage::disk('public')->put($local_path, $signature_file);
     }

@@ -68,8 +68,6 @@ return new class extends Migration
             $table->boolean('preventive_services')->default(0);
             $table->boolean('preventive_services_first')->default(0);
             $table->boolean('schedule_assigned')->default(0);
-            $table->string('plate_photo')->nullable();
-            $table->string('perimeter_photo')->nullable();
 
             $table->unsignedBigInteger('equipment_id'); //Relations many has many
             $table->foreign('equipment_id')->references('id')->on('equipments');

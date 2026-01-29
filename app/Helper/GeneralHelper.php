@@ -48,6 +48,6 @@ class GeneralHelper
 
     public  static function getImageUrl($filePath)
     {
-        return Storage::disk('space')->temporaryUrl($filePath, now()->addDay());
+        return asset('storage/' . $filePath);
     }
 }

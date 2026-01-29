@@ -13,6 +13,7 @@
         "laraveles/spanish": "^1.5",
         "league/flysystem-aws-s3-v3": "^3.29",
         "livewire/livewire": "^3.5",
+        "lorisleiva/laravel-actions": "^2.9.0",
         "spatie/laravel-permission": "^6.9",
         "wire-elements/modal": "^2.0",
         "yoeunes/toastr": "2.3"
