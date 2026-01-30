@@ -77,7 +77,7 @@ class ServicesSchedule
         $status =  $schedule->status;
         $last_date = Carbon::parse($last_date);
         $current_date = Carbon::now()->addDays(0)->format('Y-m-d');
-        $next_date = $last_date->copy()->addMonths( $frequency );
+        $next_date = $last_date->copy()->addDays( $frequency );
 
         $days = Carbon::parse($current_date)->diffInDays( $next_date );
         //If is schedule, is not needed update the status

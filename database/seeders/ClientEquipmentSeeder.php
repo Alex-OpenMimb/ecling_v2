@@ -35,7 +35,7 @@ class ClientEquipmentSeeder extends Seeder
                     ]);
 
                     EquipmentService::asset_assign( $client_equipment->equipment_id );
-                    ServicesSchedule::create_schedule( $client_equipment );
+                    //ServicesSchedule::create_schedule( $client_equipment );
                 }
 
             }

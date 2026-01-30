@@ -5,6 +5,7 @@ namespace App\Actions\PreventiveRoutineEquipment;
 use App\Models\ClientsEquipments;
 use App\Models\PreventiveRoutine;
 use App\Models\PreventiveRoutineEquipment;
+use App\Services\Schedule\ServicesSchedule;
 use Lorisleiva\Actions\Concerns\AsAction;
 
 class CreatePreventiveRoutineEquipment
@@ -26,7 +27,7 @@ class CreatePreventiveRoutineEquipment
 
         $equipmentId = $this->getEquipmentId($equipmentClient);
         $frequency = $this->getFrequency($routineId, $customFrequency);
-
+        ServicesSchedule::create_schedule( $equipmentClient, $routineId, $frequency);
         return PreventiveRoutineEquipment::create([
             'equipment_id' => $equipmentId,
             'preventive_routine_id' => $routineId,
