@@ -7,14 +7,18 @@ use App\Actions\Equipment\CreateEquipment;
 use App\Actions\PreventiveRoutineEquipment\CreatePreventiveRoutineEquipment;
 use App\Helper\GeneralHelper;
 use App\Helper\HandelSerial;
+use App\Models\Ampere;
+use App\Models\Brand;
 use App\Models\Client;
 use App\Models\ClientsEquipments;
 use App\Models\Equipment;
 use App\Models\EquipmentClass;
+use App\Models\EquipmentModel;
 use App\Models\Headquarter;
 use App\Models\Location;
 use App\Models\PreventiveRoutine;
 use App\Models\TitlePhoto;
+use App\Models\Volt;
 use App\Services\Equipment\DataEquipment;
 use App\Services\Equipment\EquipmentService;
 use App\Services\PreventiveRoutine\ServicePreventiveRoutine;
@@ -57,6 +61,11 @@ class FormClientEquipment   extends  Component
         public $preventive_routine_id;
         public $custom_frequency;
         public $preventive_routine_lists = [];
+        public $brand_options = [];
+        public $model_options = [];
+        public $voltage_options = [];
+        public $amperage_options = [];
+        public $location_options = [];
 
         public function mount(Headquarter  $headquarter, Client $client, ClientsEquipments $client_equipment )
         {
@@ -66,6 +75,16 @@ class FormClientEquipment   extends  Component
             $this->get_equipment_class();
             $this->get_title_photos();
             $this->get_preventive_routines();
+            $this->load_form_select_options();
+        }
+
+        protected function load_form_select_options(): void
+        {
+            $this->brand_options = Brand::select('id', 'name')->orderBy('name')->get();
+            $this->model_options = EquipmentModel::select('id', 'model')->orderBy('model')->get()->map(fn ($m) => ['name' => $m->model])->values()->all();
+            $this->voltage_options = Volt::select('id', 'volt_measurement')->orderBy('volt_measurement')->get()->map(fn ($v) => ['name' => (string) $v->volt_measurement])->values()->all();
+            $this->amperage_options = Ampere::select('id', 'amperage_measurement')->orderBy('amperage_measurement')->get()->map(fn ($a) => ['name' => (string) $a->amperage_measurement])->values()->all();
+            $this->location_options = Location::select('id', 'name')->orderBy('name')->get();
         }
 
         protected function get_equipment_class()

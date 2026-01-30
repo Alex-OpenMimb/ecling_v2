@@ -46,32 +46,52 @@
             <!-- block 1.5 - Campos de especificaciones -->
             <div class="md:flex md:items-center mb-4">
                 <div class="md:w-1/4 pr-0 md:pr-4 mb-4 md:mb-0">
-                    <label for="brand" class="block text-gray-700 font-bold mb-2">Marca:</label>
-                    <input type="text" id="brand" wire:model="brand" name="brand" class="focus:outline-none bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500 mb-2">
+                    <x-input-with-select
+                        :options="$brand_options"
+                        model-key="brand"
+                        label="Marca"
+                        placeholder="Escribir o elegir abajo"
+                        select-placeholder="Seleccionar marca"
+                    />
                     <div class="h-4">
                         @error('brand') <span class="text-red-400 text-sm">{{ $message }}</span> @enderror
                     </div>
                 </div>
 
                 <div class="md:w-1/4 pr-0 md:pr-4 mb-4 md:mb-0">
-                    <label for="model" class="block text-gray-700 font-bold mb-2">Modelo:</label>
-                    <input type="text" id="model" wire:model="model" name="model" class="focus:outline-none bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500 mb-2">
+                    <x-input-with-select
+                        :options="$model_options"
+                        model-key="model"
+                        label="Modelo"
+                        placeholder="Escribir o elegir abajo"
+                        select-placeholder="Seleccionar modelo"
+                    />
                     <div class="h-4">
                         @error('model') <span class="text-red-400 text-sm">{{ $message }}</span> @enderror
                     </div>
                 </div>
 
                 <div class="md:w-1/4 pr-0 md:pr-4 mb-4 md:mb-0">
-                    <label for="voltage" class="block text-gray-700 font-bold mb-2">Voltios:</label>
-                    <input type="number" id="voltage" wire:model="voltage" name="voltage" step="0.01" min="0" class="focus:outline-none bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500 mb-2">
+                    <x-input-with-select
+                        :options="$voltage_options"
+                        model-key="voltage"
+                        label="Voltios"
+                        placeholder="Escribir o elegir abajo"
+                        select-placeholder="Seleccionar voltios"
+                    />
                     <div class="h-4">
                         @error('voltage') <span class="text-red-400 text-sm">{{ $message }}</span> @enderror
                     </div>
                 </div>
 
                 <div class="md:w-1/4 pr-0 md:pr-4 mb-4 md:mb-0">
-                    <label for="amperage" class="block text-gray-700 font-bold mb-2">Amperios:</label>
-                    <input type="number" id="amperage" wire:model="amperage" name="amperage" step="0.01" min="0" class="focus:outline-none bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500 mb-2">
+                    <x-input-with-select
+                        :options="$amperage_options"
+                        model-key="amperage"
+                        label="Amperios"
+                        placeholder="Escribir o elegir abajo"
+                        select-placeholder="Seleccionar amperios"
+                    />
                     <div class="h-4">
                         @error('amperage') <span class="text-red-400 text-sm">{{ $message }}</span> @enderror
                     </div>
@@ -80,10 +100,14 @@
             <!-- block 2 -->
             <div class="md:flex md:items-center mb-4 items-center">
 
-
                 <div class="md:w-1/2 pr-0 md:pr-4 mb-4 md:mb-0">
-                    <label for="location" class="block text-gray-700 font-bold mb-2" title="">Ubicación*:</label>
-                    <input type="text" id="location" wire:model="location" name="location" class="focus:outline-none bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500 mb-2">
+                    <x-input-with-select
+                        :options="$location_options"
+                        model-key="location"
+                        label="Ubicación*"
+                        placeholder="Escribir o elegir abajo"
+                        select-placeholder="Seleccionar ubicación"
+                    />
                     <div class="h-4">
                         @error('location') <span class="text-red-400 text-sm">{{ $message }}</span> @enderror
                     </div>
