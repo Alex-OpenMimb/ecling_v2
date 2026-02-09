@@ -12,7 +12,23 @@
         </a>
 
     </div>
-    <div class="container mx-auto   px-4 py-6 mb-8 overflow-x-auto bg-white rounded-lg shadow-md dark:bg-gray-800">
+    <div class="container mx-auto px-4 py-6 mb-8 overflow-x-auto bg-white rounded-lg shadow-md dark:bg-gray-800">
+        @if(count($equipments_list) > 0)
+            <div class="mb-6">
+                <label for="equipment_select" class="block text-gray-700 font-bold mb-2">Equipos existentes:</label>
+                <select id="equipment_select" wire:model.live="selected_equipment_id" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                    <option value="">Seleccionar un equipo</option>
+                    @foreach($equipments_list as $equipment)
+                        <option value="{{ $equipment->id }}" >
+                            {{ $equipment->name }} -
+                            Marca: {{ $equipment->brand_name }},
+                            Modelo: {{ $equipment->model_name }},
+                            Voltios: {{ $equipment->voltage }}{{ $equipment->amperage ? ', Amperios: ' . $equipment->amperage : '' }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+        @endif
         <form wire:submit.prevent="updateOrStore">
             <!-- block 1 -->
             <div class="md:flex md:items-center mb-4">
@@ -89,6 +105,7 @@
                         label="Voltios"
                         placeholder="Escribir o elegir abajo"
                         select-placeholder="Seleccionar voltios"
+                        :initial-value="$voltage ?? ''"
                     />
                     <div class="h-4">
                         @error('voltage') <span class="text-red-400 text-sm">{{ $message }}</span> @enderror
@@ -102,6 +119,7 @@
                         label="Amperios"
                         placeholder="Escribir o elegir abajo"
                         select-placeholder="Seleccionar amperios"
+                        :initial-value="$amperage ?? ''"
                     />
                     <div class="h-4">
                         @error('amperage') <span class="text-red-400 text-sm">{{ $message }}</span> @enderror

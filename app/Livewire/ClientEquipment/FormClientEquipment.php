@@ -5,8 +5,6 @@ namespace App\Livewire\ClientEquipment;
 use App\Actions\ClientEquipment\CreateClientEquipment;
 use App\Actions\Equipment\CreateEquipment;
 use App\Actions\PreventiveRoutineEquipment\CreatePreventiveRoutineEquipment;
-use App\Helper\GeneralHelper;
-use App\Helper\HandelSerial;
 use App\Models\Ampere;
 use App\Models\Brand;
 use App\Models\Client;
@@ -19,11 +17,6 @@ use App\Models\Location;
 use App\Models\PreventiveRoutine;
 use App\Models\TitlePhoto;
 use App\Models\Volt;
-use App\Services\Equipment\DataEquipment;
-use App\Services\Equipment\EquipmentService;
-use App\Services\PreventiveRoutine\ServicePreventiveRoutine;
-use App\Services\Schedule\ServicesSchedule;
-use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Livewire\Attributes\Locked;
 use Livewire\Component;
@@ -67,6 +60,8 @@ class FormClientEquipment   extends  Component
         public $voltage_options = [];
         public $amperage_options = [];
         public $location_options = [];
+        public $equipments_list = [];
+        public $selected_equipment_id = null;
 
         public function mount(Headquarter  $headquarter, Client $client, ClientsEquipments $client_equipment )
         {
@@ -77,6 +72,47 @@ class FormClientEquipment   extends  Component
             $this->get_title_photos();
             $this->get_preventive_routines();
             $this->load_form_select_options();
+            $this->load_equipments();
+        }
+
+        protected function load_equipments(): void
+        {
+            $this->equipments_list = Equipment::select(
+                'equipments.id',
+                'equipments.name',
+                'brands.name as brand_name',
+                'equipment_models.model as model_name',
+                'volts.volt_measurement as voltage',
+                'amperes.amperage_measurement as amperage'
+            )
+                ->join('brands', 'equipments.brand_id', '=', 'brands.id')
+                ->join('equipment_models', 'equipments.equipment_model_id', '=', 'equipment_models.id')
+                ->join('volts', 'equipments.volt_id', '=', 'volts.id')
+                ->leftJoin('amperes', 'equipments.ampere_id', '=', 'amperes.id')
+                ->where('equipments.status', true)
+                ->orderBy('equipments.name')
+                ->get();
+        }
+
+        public function updatedSelectedEquipmentId($value): void
+        {
+            if (empty($value)) {
+                return;
+            }
+
+            $equipment = Equipment::with(['brand', 'equipmentModel', 'volts', 'amperes'])
+                ->where('id', $value)
+                ->first();
+
+            if ($equipment) {
+                $this->name = $equipment->name;
+                $this->brand = $equipment->brand ? $equipment->brand->name : '';
+                $this->model = $equipment->equipmentModel ? $equipment->equipmentModel->model : '';
+                $this->voltage = $equipment->volts ?  ( string ) $equipment->volts->volt_measurement : null;
+                $this->amperage = $equipment->amperes ? ( string )   $equipment->amperes->amperage_measurement : null;
+                $this->equipment_class_id = $equipment->equipment_class_id;
+            }
+            $this->load_equipments();
         }
 
         protected function load_form_select_options(): void
