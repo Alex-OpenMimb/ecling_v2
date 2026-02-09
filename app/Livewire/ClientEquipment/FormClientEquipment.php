@@ -43,6 +43,7 @@ class FormClientEquipment   extends  Component
 
         // Propiedades para crear equipo
         public $name;
+        public $quantity = 1;
         public $brand;
         public $location;
         public $voltage;
@@ -133,37 +134,44 @@ class FormClientEquipment   extends  Component
             $equipmentResult = CreateEquipment::run($equipmentData);
             $equipment = $equipmentResult['equipment'];
 
-            // Crear el registro en clients_has_equipments
-            $clientEquipmentData = [
-                'observations' => $this->observations,
-                'client_id' => $this->client->id,
-                'headquarter_id' => $this->headquarter->id,
-                'location' => $this->location,
-                'equipment_class_id' => $this->equipment_class_id,
-                'plate_photo' => $this->plate_photo,
-                'perimeter_photo' => $this->perimeter_photo,
-                'photo1_title_photo_id' => $this->photo1_title_photo_id,
-                'photo2_title_photo_id' => $this->photo2_title_photo_id,
-            ];
+            // Crear la cantidad de equipos para el cliente
+            $quantity = (int) $this->quantity;
+            for ($i = 0; $i < $quantity; $i++) {
+                // Crear el registro en clients_has_equipments
+                // Solo el primer equipo tendrá las fotos (los UploadedFile no se pueden reutilizar)
+                $clientEquipmentData = [
+                    'observations' => $this->observations,
+                    'client_id' => $this->client->id,
+                    'headquarter_id' => $this->headquarter->id,
+                    'location' => $this->location,
+                    'equipment_class_id' => $this->equipment_class_id,
+                    'plate_photo' =>  $this->plate_photo,
+                    'perimeter_photo' => $this->perimeter_photo,
+                    'photo1_title_photo_id' => $this->photo1_title_photo_id,
+                    'photo2_title_photo_id' =>  $this->photo2_title_photo_id,
+                ];
 
-            $result = CreateClientEquipment::run($equipment, $clientEquipmentData);
+                $result = CreateClientEquipment::run($equipment, $clientEquipmentData);
+                $clientEquipment = $result['client_equipment'];
 
-            $clientEquipment = $result['client_equipment'];
+                if ($this->preventive_routine_id) {
+                    CreatePreventiveRoutineEquipment::run([
+                        'equipment_client' => $clientEquipment,
+                        'routine_id' => (int) $this->preventive_routine_id,
+                        'custom_frequency' => $this->custom_frequency !== '' && $this->custom_frequency !== null
+                            ? (int) $this->custom_frequency
+                            : null,
+                    ]);
 
-            if( $this->preventive_routine_id  ){
-                CreatePreventiveRoutineEquipment::run([
-                    'equipment_client' => $clientEquipment,
-                    'routine_id' => (int) $this->preventive_routine_id,
-                    'custom_frequency' => $this->custom_frequency !== '' && $this->custom_frequency !== null
-                        ? (int) $this->custom_frequency
-                        : null,
-                ]);
-
-                $this->markPreventiveRoutineAssigned($equipment, $clientEquipment);
+                    $this->markPreventiveRoutineAssigned($equipment, $clientEquipment);
+                }
             }
 
+            $message = $quantity === 1
+                ? 'El equipo se ha creado con éxito!'
+                : "Se han creado {$quantity} equipos con éxito!";
 
-            toastr()->success('El equipo se ha creado con éxito!', 'Felicitaciones');
+            toastr()->success($message, 'Felicitaciones');
             return redirect()->route('admin.clients-equipments', [
                 'client' => $this->client->slug,
                 'headquarter' => $this->headquarter->slug
@@ -182,7 +190,8 @@ class FormClientEquipment   extends  Component
         public function rules()
         {
             return [
-                'name' => 'required|string|min:3',
+                'name' => ['required', 'string', 'min:3', Rule::unique('equipments', 'name')],
+                'quantity' => 'required|integer|min:1',
                 'brand' => 'required|string',
                 'location' => 'required|string',
                 'voltage' => 'required|numeric|min:0',
@@ -200,6 +209,10 @@ class FormClientEquipment   extends  Component
                 'name.required' => 'El nombre es requerido.',
                 'name.string' => 'El nombre debe ser texto.',
                 'name.min' => 'El nombre debe tener al menos 3 caracteres.',
+                'name.unique' => 'El nombre del equipo ya existe en el sistema.',
+                'quantity.required' => 'La cantidad es requerida.',
+                'quantity.integer' => 'La cantidad debe ser un número entero.',
+                'quantity.min' => 'La cantidad debe ser mayor o igual a 1.',
                 'brand.required' => 'La marca es requerida.',
                 'brand.string' => 'La marca debe ser texto.',
                 'location.required' => 'La ubicación es requerida.',
