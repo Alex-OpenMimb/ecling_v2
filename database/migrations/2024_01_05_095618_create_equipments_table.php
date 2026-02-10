@@ -104,7 +104,7 @@ return new class extends Migration
         Schema::create('equipments', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->text('description')->nullable();
-            $table->string('name')->nullable()->unique();
+            $table->string('name')->nullable();
             $table->string('slug')->nullable();
             $table->boolean('status')->default(1);
             $table->boolean('asset_assignment')->default(0);
@@ -128,6 +128,9 @@ return new class extends Migration
 
             $table->timestamps();
             $table->softDeletes();
+
+            // Índice único compuesto para evitar duplicados
+            $table->unique(['name', 'equipment_model_id', 'equipment_class_id', 'brand_id', 'volt_id', 'ampere_id'], 'equipments_unique_composite');
         });
     }
 

@@ -26,7 +26,7 @@ class DatatableClientEquipment  extends Component
         $this->headquarter = $headquarter;
         $this->headquarter_id = $headquarter->id;
         $this->client_id = $client->id;
-        $this->heads = ['Items','Nombre*','Modelo*','Marca*','Clase de equipo*','Estado','Preventivo'];
+        $this->heads = ['Items','Nombre*','Serial*','Modelo*','Marca*','Clase de equipo*','Estado','Preventivo'];
     }
 
 
@@ -44,6 +44,7 @@ class DatatableClientEquipment  extends Component
         $queries = trim($this->query);
         return ClientsEquipments::select('clients_has_equipments.id',
             'clients_has_equipments.status',
+            'clients_has_equipments.internal_id',
             'clients_has_equipments.preventive_services',
             'brands.name as brand_name',
             'equipments.name as equipment_name',
@@ -59,7 +60,8 @@ class DatatableClientEquipment  extends Component
                 ->orWhere('equipment_models.model','like','%'. $queries. '%')
                 ->orWhere('brands.name','like','%'. $queries. '%')
                 ->orWhere('equipments.name','like','%'. $queries. '%')
-                ->orWhere('equipment_classes.name','like','%'. $queries. '%');
+                ->orWhere('equipment_classes.name','like','%'. $queries. '%')
+                ->orWhere('clients_has_equipments.internal_id','like','%'. $queries. '%');
 
             })->orderBy('clients_has_equipments.id','desc')
             ->simplePaginate( $this->amount );

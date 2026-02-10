@@ -109,7 +109,7 @@ class FormClientEquipment   extends  Component
                 $this->brand = $equipment->brand ? $equipment->brand->name : '';
                 $this->model = $equipment->equipmentModel ? $equipment->equipmentModel->model : '';
                 $this->voltage = $equipment->volts ?  ( string ) $equipment->volts->volt_measurement : null;
-                $this->amperage = $equipment->amperes ? ( string )   $equipment->amperes->amperage_measurement : null;
+                $this->amperage = $equipment->amperes ? ( string ) $equipment->amperes->amperage_measurement : null;
                 $this->equipment_class_id = $equipment->equipment_class_id;
             }
             $this->load_equipments();
@@ -226,7 +226,7 @@ class FormClientEquipment   extends  Component
         public function rules()
         {
             return [
-                'name' => ['required', 'string', 'min:3', Rule::unique('equipments', 'name')],
+                'name' => ['required', 'string', 'min:3'],
                 'quantity' => 'required|integer|min:1',
                 'brand' => 'required|string',
                 'location' => 'required|string',
@@ -245,7 +245,6 @@ class FormClientEquipment   extends  Component
                 'name.required' => 'El nombre es requerido.',
                 'name.string' => 'El nombre debe ser texto.',
                 'name.min' => 'El nombre debe tener al menos 3 caracteres.',
-                'name.unique' => 'El nombre del equipo ya existe en el sistema.',
                 'quantity.required' => 'La cantidad es requerida.',
                 'quantity.integer' => 'La cantidad debe ser un número entero.',
                 'quantity.min' => 'La cantidad debe ser mayor o igual a 1.',

@@ -124,7 +124,7 @@
             </li>
         @endcan
 
-      {{--  @can('admin-store')
+        @can('admin-store')
             <li class="mb-1 group">
                 <a href="" class="flex font-semibold items-center py-2 px-4 text-gray-500 hover:bg-blue-200 hover:text-blue-800 rounded-md group-[.active]:bg-gray-800 group-[.active]:text-white group-[.selected]:bg-blue-200 group-[.selected]:text-blue-800 sidebar-dropdown-toggle">
                     <i class='bx bx-store  mr-3 text-lg'></i>
@@ -138,17 +138,16 @@
                     </li>
                     @endcan
 
-                    @can('admin.materials')
-                    <li class="mb-4">
-                        <a href="{{route('admin.materials')}}" class="text-gray-900 text-sm flex items-center hover:text-blue-600 before:contents-[''] before:w-1 before:h-1 before:rounded-full before:bg-gray-300 before:mr-3">Materiales</a>
-                    </li>
-
-                        @endcan
+                     {{--  @can('admin.materials')
+                        <li class="mb-4">
+                            <a href="{{route('admin.materials')}}" class="text-gray-900 text-sm flex items-center hover:text-blue-600 before:contents-[''] before:w-1 before:h-1 before:rounded-full before:bg-gray-300 before:mr-3">Materiales</a>
+                        </li>
+                        @endcan --}}
                 </ul>
             </li>
-        @endcan --}}
+        @endcan
 
-      {{--  @can('admin-general-equipments')
+        @can('admin-general-equipments')
             <li class="mb-1 group">
                 <a href="" class="flex font-semibold items-center py-2 px-4 text-gray-500 hover:bg-blue-200 hover:text-blue-800 rounded-md group-[.active]:bg-gray-800 group-[.active]:text-white group-[.selected]:bg-blue-200 group-[.selected]:text-blue-800 sidebar-dropdown-toggle">
                     <i class='bx bx-cog  mr-3 text-lg'></i>
@@ -161,7 +160,7 @@
                     </li>
                 </ul>
             </li>
-        @endcan --}}
+        @endcan
 
         @can('admin-preventive')
             <li class="mb-1 group">

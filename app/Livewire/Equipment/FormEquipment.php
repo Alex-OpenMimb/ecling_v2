@@ -142,7 +142,8 @@ class FormEquipment extends Component
                        ->where('equipment_class_id', $this->equipment_class_id)
                        ->where('brand_id',$this->brand_id)
                        ->where('volt_id',$this->volt_id)
-                       ->where('ampere_id',$this->ampere_id);
+                       ->where('ampere_id',$this->ampere_id)
+                       ->where('name',$this->name);
                })->ignore($this->id,'id'),
            ],
 

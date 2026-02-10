@@ -33,6 +33,7 @@
             <tr class="group" wire:key="{{$equipment->id}}">
                 <x-table.row> {{$counter}} </x-table.row>
                 <x-table.row> {{$equipment->equipment_name}} </x-table.row>
+                <x-table.row> {{$equipment->internal_id}} </x-table.row>
                 <x-table.row> <div title="{{$equipment->equipment_model}}" class="truncate-13" >{{$equipment->equipment_model}}</div> </x-table.row>
                 <x-table.row> <div class="truncate-13" title="{{$equipment->brand_name}}" >{{$equipment->brand_name}}</div> </x-table.row>
                 <x-table.row > <div class="truncate-13" title="{{$equipment->equipment_class_name}}" >{{$equipment->equipment_class_name}}</div> </x-table.row>

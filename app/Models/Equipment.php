@@ -84,12 +84,12 @@ class Equipment extends Model
 
     public function volts()
     {
-        return $this->belongsTo( Volt::class );
+        return $this->belongsTo( Volt::class,'volt_id' );
     }
 
     public function amperes()
     {
-        return $this->belongsTo( Ampere::class );
+        return $this->belongsTo( Ampere::class,'ampere_id' );
     }
 
 
