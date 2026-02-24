@@ -27,6 +27,14 @@ class ClientsEquipments extends Model
             'schedule_assigned',
     ];
 
+    public function client()
+    {
+        return $this->belongsTo(Client::class, 'client_id');
+    }
+    public function equipment()
+    {
+        return $this->belongsTo(Equipment::class, 'equipment_id');
+    }
 
     public function location()
     {

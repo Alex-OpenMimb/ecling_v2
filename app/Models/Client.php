@@ -30,7 +30,7 @@ class Client extends Model
 
     public function equipments()
     {
-        return $this->belongsToMany(  Equipment::class );
+        return $this->belongsToMany(  Equipment::class, 'ClientsEquipments', 'client_id', 'equipment_id' );
     }
 
     public function generalReports()

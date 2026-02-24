@@ -16,7 +16,7 @@
         @if(count($equipments_list) > 0)
             <div class="mb-6">
                 <label for="equipment_select" class="block text-gray-700 font-bold mb-2">Equipos existentes:</label>
-                <select id="equipment_select" wire:model.live="selected_equipment_id" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                <select  @if( $disabled ) disabled @endif id="equipment_select" wire:model.live="selected_equipment_id" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-500 dark:focus:border-blue-500">
                     <option value="">Seleccionar un equipo</option>
                     @foreach($equipments_list as $equipment)
                         <option value="{{ $equipment->id }}" >
@@ -37,7 +37,7 @@
                     <div class="flex">
                         <label for="equipment_class_id" class="block text-gray-700 font-bold mb-2" title="">Clase de equipo*:</label>
                     </div>
-                    <select id="equipment_class_id" wire:model="equipment_class_id" name="equipment_class_id" class="mb-2 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400  dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                    <select   @if( $disabled ) disabled @endif id="equipment_class_id" wire:model="equipment_class_id" name="equipment_class_id" class="mb-2 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400  dark:focus:ring-blue-500 dark:focus:border-blue-500">
                         <option value="">Seleccionar</option>
                         @foreach($equipment_class_lists as $class)
                             <option wire:key="{{$class->id}}" value="{{$class->id}}">{{$class->name}}</option>
@@ -55,14 +55,14 @@
                     <div class="md:flex md:items-center md:gap-4">
                         <div class="md:w-2/3 mb-4 md:mb-0">
                             <label for="name" class="block text-gray-700 font-bold mb-2">Nombre:</label>
-                            <input type="text" id="name" wire:model="name" name="name" class="focus:outline-none bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500 mb-2">
+                            <input type="text" id="name" wire:model="name" name="name"  @if( $readonly )  readonly @endif  class="focus:outline-none bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500 mb-2">
                             <div class="h-4">
                                 @error('name') <span class="text-red-400 text-sm">{{ $message }}</span> @enderror
                             </div>
                         </div>
                         <div class="md:w-1/3 mb-4 md:mb-0">
                             <label for="quantity" class="block text-gray-700 font-bold mb-2">Cantidad:</label>
-                            <input type="number" id="quantity" wire:model="quantity" name="quantity" min="1" step="1" class="focus:outline-none bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500 mb-2">
+                            <input type="number" id="quantity" wire:model="quantity"  @if( $readonly )  readonly @endif  name="quantity" min="1" step="1" class="focus:outline-none bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500 mb-2">
                             <div class="h-4">
                                 @error('quantity') <span class="text-red-400 text-sm">{{ $message }}</span> @enderror
                             </div>
@@ -79,6 +79,8 @@
                         label="Marca"
                         placeholder="Escribir o elegir abajo"
                         select-placeholder="Seleccionar marca"
+                        :readonly="$readonly"
+                        :disabled="$disabled"
                     />
                     <div class="h-4">
                         @error('brand') <span class="text-red-400 text-sm">{{ $message }}</span> @enderror
@@ -92,6 +94,8 @@
                         label="Modelo"
                         placeholder="Escribir o elegir abajo"
                         select-placeholder="Seleccionar modelo"
+                        :readonly="$readonly"
+                        :disabled="$disabled"
                     />
                     <div class="h-4">
                         @error('model') <span class="text-red-400 text-sm">{{ $message }}</span> @enderror
@@ -106,6 +110,8 @@
                         placeholder="Escribir o elegir abajo"
                         select-placeholder="Seleccionar voltios"
                         :initial-value="$voltage ?? ''"
+                        :readonly="$readonly"
+                        :disabled="$disabled"
                     />
                     <div class="h-4">
                         @error('voltage') <span class="text-red-400 text-sm">{{ $message }}</span> @enderror
@@ -120,6 +126,8 @@
                         placeholder="Escribir o elegir abajo"
                         select-placeholder="Seleccionar amperios"
                         :initial-value="$amperage ?? ''"
+                        :readonly="$readonly"
+                        :disabled="$disabled"
                     />
                     <div class="h-4">
                         @error('amperage') <span class="text-red-400 text-sm">{{ $message }}</span> @enderror

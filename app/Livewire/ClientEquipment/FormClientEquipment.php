@@ -62,9 +62,24 @@ class FormClientEquipment   extends  Component
         public $location_options = [];
         public $equipments_list = [];
         public $selected_equipment_id = null;
+        public $readonly = false;
+        public $disabled = false;
 
         public function mount(Headquarter  $headquarter, Client $client, ClientsEquipments $client_equipment )
         {
+
+            if( $client_equipment->id  ){
+                $this->readonly = true;
+                $this->disabled = true;
+                $this->id = $client_equipment->id;
+                $this->name = $client_equipment->equipment->name;
+                $this->brand = $client_equipment->equipment->brand->name;
+                $this->model = $client_equipment->equipment->equipmentModel->model;
+                $this->voltage = $client_equipment->equipment->volts->volt_measurement;
+                $this->amperage = $client_equipment->equipment->amperes->amperage_measurement;
+                $this->location = $client_equipment->location->name;
+            }
+
             $this->headquarter = $headquarter;
             $this->client = $client;
             $this->client_equipment = $client_equipment;
@@ -94,6 +109,10 @@ class FormClientEquipment   extends  Component
                 ->get();
         }
 
+        public function updated()
+        {
+            $this->load_equipments();
+        }
         public function updatedSelectedEquipmentId($value): void
         {
             if (empty($value)) {

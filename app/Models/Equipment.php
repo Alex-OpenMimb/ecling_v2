@@ -95,7 +95,9 @@ class Equipment extends Model
 
     public function clients()
     {
-        return  $this->belongsToMany( Client::class );
+        return  $this->belongsToMany( Client::class,  'ClientsEquipments',
+            'equipment_id',
+            'client_id' );
     }
 
     public function preventiveRoutines()
