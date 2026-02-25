@@ -246,7 +246,7 @@
             <div class="md:flex md:items-center mb-4">
                 <div class="md:w-1/2 pr-0 md:pr-4 mb-4 md:mb-0">
                     <label for="preventive_routine_id" class="block text-gray-700 font-bold mb-2">Rutina preventiva:</label>
-                    <select id="preventive_routine_id" wire:model="preventive_routine_id" name="preventive_routine_id" class="mb-2 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                    <select id="preventive_routine_id" wire:model="preventive_routine_id" @if( $disabled ) disabled @endif name="preventive_routine_id" class="mb-2 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500">
                         <option value="">Seleccionar</option>
                         @foreach($preventive_routine_lists as $routine)
                             <option wire:key="routine-{{$routine->id}}" value="{{$routine->id}}">{{$routine->name}}</option>
@@ -258,7 +258,7 @@
                 </div>
                 <div class="md:w-1/2 pr-0 md:pr-4 mb-4 md:mb-0">
                     <label for="custom_frequency" class="block text-gray-700 font-bold mb-2">Frecuencia personalizada:</label>
-                    <input type="number" id="custom_frequency" wire:model="custom_frequency" name="custom_frequency" min="0" placeholder="Días" class="focus:outline-none bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500 mb-2">
+                    <input type="number" id="custom_frequency" wire:model="custom_frequency"  @if( $readonly ) readonly @endif name="custom_frequency" min="0" placeholder="Días" class="focus:outline-none bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500 mb-2">
                     <div class="h-4">
                         @error('custom_frequency') <span class="text-red-400 text-sm">{{ $message }}</span> @enderror
                     </div>

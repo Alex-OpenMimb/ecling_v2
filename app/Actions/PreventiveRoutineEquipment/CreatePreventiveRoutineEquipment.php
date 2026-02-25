@@ -37,7 +37,7 @@ class CreatePreventiveRoutineEquipment
 
     protected function getEquipmentId(ClientsEquipments $clientEquipment): int
     {
-        return (int) $clientEquipment->equipment_id;
+        return (int) $clientEquipment->id;
     }
 
     /**

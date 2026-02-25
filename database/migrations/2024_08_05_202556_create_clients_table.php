@@ -110,6 +110,21 @@ return new class extends Migration
             $table->softDeletes();
         });
 
+
+        Schema::create('preventive_routines_equipments', function (Blueprint $table){
+            $table->bigIncrements('id');
+
+            $table->unsignedBigInteger('equipment_id');
+            $table->foreign('equipment_id')->references('id')->on('clients_has_equipments');
+
+            $table->unsignedBigInteger('preventive_routine_id');
+            $table->foreign('preventive_routine_id')->references('id')->on('preventive_routines');
+
+            $table->integer('custom_frequency')->nullable();
+            $table->timestamps();
+
+        });
+
     }
 
     /**
@@ -122,5 +137,6 @@ return new class extends Migration
         Schema::dropIfExists('addresses');
         Schema::dropIfExists('clients_has_equipments');
         Schema::dropIfExists('schedules');
+        Schema::dropIfExists('preventive_routines_equipments');
     }
 };

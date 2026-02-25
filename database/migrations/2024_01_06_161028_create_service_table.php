@@ -52,19 +52,6 @@ return new class extends Migration
         });
 
 
-        Schema::create('preventive_routines_equipments', function (Blueprint $table){
-            $table->bigIncrements('id');
-
-            $table->unsignedBigInteger('equipment_id');
-            $table->foreign('equipment_id')->references('id')->on('equipments');
-
-            $table->unsignedBigInteger('preventive_routine_id');
-            $table->foreign('preventive_routine_id')->references('id')->on('preventive_routines');
-
-            $table->integer('custom_frequency')->nullable();
-            $table->timestamps();
-
-        });
 
         Schema::create('corrective_activities', function (Blueprint $table){
             $table->bigIncrements('id');
@@ -94,7 +81,6 @@ return new class extends Migration
         Schema::dropIfExists('preventive_activities');
         Schema::dropIfExists('preventive_routines');
         Schema::dropIfExists('preventive_routines_activities');
-        Schema::dropIfExists('preventive_routines_equipments');
         Schema::dropIfExists('corrective_activities');
 
     }
