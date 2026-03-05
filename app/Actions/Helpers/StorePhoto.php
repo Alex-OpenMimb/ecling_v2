@@ -31,7 +31,7 @@ class StorePhoto
     protected function storeFile(UploadedFile $file, string $basePath, int $modelId): string
     {
         $extension = $file->getClientOriginalExtension() ?: $file->extension() ?: 'png';
-        $filename = 'photo_' . Str::uuid() . '.' . $extension;
+        $filename = 'photo.' . $extension;
         $fullPath = $basePath . '/' . $modelId;
 
         return $file->storeAs($fullPath, $filename, 'public');

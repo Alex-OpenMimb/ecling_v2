@@ -71,7 +71,7 @@ class CreateClientEquipment
                 'file' => $data['plate_photo'],
                 'title_photo_id' => $titlePhotoId,
                 'model' => $clientEquipment,
-                'base_path' => 'image/client_equipment',
+                'base_path' => 'image/client_equipment/plate_photo',
             ];
             StorePhoto::run($photoData);
         }
@@ -83,7 +83,7 @@ class CreateClientEquipment
                 'file' => $data['perimeter_photo'],
                 'title_photo_id' => $titlePhotoId,
                 'model' => $clientEquipment,
-                'base_path' => 'image/client_equipment',
+                'base_path' => 'image/client_equipment/perimeter_photo',
             ];
             StorePhoto::run($photoData);
         }

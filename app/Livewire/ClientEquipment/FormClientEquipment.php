@@ -4,6 +4,7 @@ namespace App\Livewire\ClientEquipment;
 
 use App\Actions\ClientEquipment\CreateClientEquipment;
 use App\Actions\Equipment\CreateEquipment;
+use App\Actions\Helpers\StorePhoto;
 use App\Actions\PreventiveRoutineEquipment\CreatePreventiveRoutineEquipment;
 use App\Models\Ampere;
 use App\Models\Brand;
@@ -14,10 +15,13 @@ use App\Models\EquipmentClass;
 use App\Models\EquipmentModel;
 use App\Models\Headquarter;
 use App\Models\Location;
+use App\Models\Photo;
 use App\Models\PreventiveRoutine;
 use App\Models\PreventiveRoutineEquipment;
 use App\Models\TitlePhoto;
 use App\Models\Volt;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use Livewire\Attributes\Locked;
 use Livewire\Component;
@@ -82,8 +86,17 @@ class FormClientEquipment   extends  Component
             $this->load_equipments();
         }
 
+
+        private function setStorageImage( $client_equipment )
+        {
+           foreach ( $client_equipment->photos as $photo ) {
+
+           }
+        }
+
         private function setCreatedData( $client_equipment )
         {
+           $this->setStorageImage( $client_equipment );
             $this->readonly = true;
             $this->disabled = true;
             $this->id = $client_equipment->id;
@@ -94,7 +107,10 @@ class FormClientEquipment   extends  Component
             $this->voltage = $client_equipment->equipment->volts->volt_measurement;
             $this->amperage = $client_equipment->equipment->amperes->amperage_measurement;
             $this->location = $client_equipment->location->name;
-            $this->setAssignedPreventiveRoutine();
+            if( $client_equipment->schedule_assigned  ){
+                $this->setAssignedPreventiveRoutine();
+            }
+
 
         }
 
@@ -244,13 +260,35 @@ class FormClientEquipment   extends  Component
                       $this->markPreventiveRoutineAssigned($equipment, $clientEquipment);
                   }
               }
-          }else{
-             $location =   Location::firstOrCreate(
+          } else {
+              $location = Location::firstOrCreate(
                   ['name' => $this->location],
                   ['status' => true]
               );
               $this->client_equipment->location_id = $location->id;
               $this->client_equipment->save();
+
+              // Guardar fotos si se subieron en la edición (reemplazar si ya existe)
+              if ($this->plate_photo instanceof UploadedFile) {
+                  $this->replacePhotoByBasePath($this->client_equipment, 'image/client_equipment/plate_photo');
+                  $titlePhotoId = !empty($this->photo1_title_photo_id) ? (int) $this->photo1_title_photo_id : null;
+                  StorePhoto::run([
+                      'file' => $this->plate_photo,
+                      'title_photo_id' => $titlePhotoId,
+                      'model' => $this->client_equipment,
+                      'base_path' => 'image/client_equipment/plate_photo',
+                  ]);
+              }
+              if ($this->perimeter_photo instanceof UploadedFile) {
+                  $this->replacePhotoByBasePath($this->client_equipment, 'image/client_equipment/perimeter_photo');
+                  $titlePhotoId = !empty($this->photo2_title_photo_id) ? (int) $this->photo2_title_photo_id : null;
+                  StorePhoto::run([
+                      'file' => $this->perimeter_photo,
+                      'title_photo_id' => $titlePhotoId,
+                      'model' => $this->client_equipment,
+                      'base_path' => 'image/client_equipment/perimeter_photo',
+                  ]);
+              }
           }
 
             $message = $quantity === 1
@@ -262,6 +300,21 @@ class FormClientEquipment   extends  Component
                 'client' => $this->client->slug,
                 'headquarter' => $this->headquarter->slug
             ]);
+        }
+
+        protected function replacePhotoByBasePath(ClientsEquipments $clientEquipment, string $basePath): void
+        {
+            $existing = Photo::where('model_type', ClientsEquipments::class)
+                ->where('model_id', $clientEquipment->id)
+                ->where('path', 'like', $basePath . '/%')
+                ->get();
+
+            foreach ($existing as $photo) {
+                if (Storage::disk('public')->exists($photo->path)) {
+                    Storage::disk('public')->delete($photo->path);
+                }
+                $photo->delete();
+            }
         }
 
         protected function markPreventiveRoutineAssigned(Equipment $equipment, ClientsEquipments $clientEquipment): void

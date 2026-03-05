@@ -68,6 +68,10 @@ class ClientsEquipments extends Model
        return  $this->hasMany( GeneralReport::class );
     }
 
+    public function photos()
+    {
+        return $this->morphMany(Photo::class, 'model');
+    }
 
     ///Stters
     public function observations(): Attribute
