@@ -69,12 +69,14 @@ class FormClientEquipment   extends  Component
         public $selected_equipment_id = null;
         public $readonly = false;
         public $disabled = false;
+        public $disabled_preventive = false;
 
         public function mount(Headquarter  $headquarter, Client $client, ClientsEquipments $client_equipment )
         {
 
             if( $client_equipment->id  ){
                 $this->setCreatedData( $client_equipment );
+                $this->checkPreventiveService( $client_equipment );
             }
             $this->headquarter = $headquarter;
             $this->client = $client;
@@ -87,16 +89,8 @@ class FormClientEquipment   extends  Component
         }
 
 
-        private function setStorageImage( $client_equipment )
-        {
-           foreach ( $client_equipment->photos as $photo ) {
-
-           }
-        }
-
         private function setCreatedData( $client_equipment )
         {
-           $this->setStorageImage( $client_equipment );
             $this->readonly = true;
             $this->disabled = true;
             $this->id = $client_equipment->id;
@@ -249,15 +243,7 @@ class FormClientEquipment   extends  Component
                   $clientEquipment = $result['client_equipment'];
 
                   if ($this->preventive_routine_id) {
-                      CreatePreventiveRoutineEquipment::run([
-                          'equipment_client' => $clientEquipment,
-                          'routine_id' => (int) $this->preventive_routine_id,
-                          'custom_frequency' => $this->custom_frequency !== '' && $this->custom_frequency !== null
-                              ? (int) $this->custom_frequency
-                              : null,
-                      ]);
-
-                      $this->markPreventiveRoutineAssigned($equipment, $clientEquipment);
+                     $this->setPreventiveService( $equipment,$clientEquipment );
                   }
               }
           } else {
@@ -265,6 +251,9 @@ class FormClientEquipment   extends  Component
                   ['name' => $this->location],
                   ['status' => true]
               );
+              if ($this->preventive_routine_id) {
+                  $this->setPreventiveService($this->client_equipment->equipment, $this->client_equipment);
+              }
               $this->client_equipment->location_id = $location->id;
               $this->client_equipment->save();
 
@@ -302,6 +291,27 @@ class FormClientEquipment   extends  Component
             ]);
         }
 
+
+        private function setPreventiveService( $equipment,$clientEquipment )
+        {
+
+            CreatePreventiveRoutineEquipment::run([
+                'equipment_client' => $clientEquipment,
+                'routine_id' => (int) $this->preventive_routine_id,
+                'custom_frequency' => $this->custom_frequency !== '' && $this->custom_frequency !== null
+                    ? (int) $this->custom_frequency
+                    : null,
+            ]);
+
+            $this->markPreventiveRoutineAssigned($equipment, $clientEquipment);
+        }
+
+        private function checkPreventiveService( $client_equipment )
+        {
+            if( $client_equipment->schedule_assigned){
+               $this->disabled_preventive = true;
+            }
+        }
         protected function replacePhotoByBasePath(ClientsEquipments $clientEquipment, string $basePath): void
         {
             $existing = Photo::where('model_type', ClientsEquipments::class)
