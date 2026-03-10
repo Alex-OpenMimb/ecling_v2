@@ -18,6 +18,7 @@ use App\Models\Location;
 use App\Models\Photo;
 use App\Models\PreventiveRoutine;
 use App\Models\PreventiveRoutineEquipment;
+use App\Models\SchedulesServiceOrder;
 use App\Models\TitlePhoto;
 use App\Models\Volt;
 use Illuminate\Http\UploadedFile;
@@ -76,7 +77,7 @@ class FormClientEquipment   extends  Component
 
             if( $client_equipment->id  ){
                 $this->setCreatedData( $client_equipment );
-                $this->checkPreventiveService( $client_equipment );
+                $this->validatePreventiveService( $client_equipment );
             }
             $this->headquarter = $headquarter;
             $this->client = $client;
@@ -106,6 +107,18 @@ class FormClientEquipment   extends  Component
             }
 
 
+        }
+
+        public function updatedPreventiveRoutineId($value): void
+        {
+            if (empty($value)) {
+                $this->custom_frequency = null;
+                return;
+            }
+            $routine = PreventiveRoutine::find($value);
+            if ($routine && $routine->frequency !== null) {
+                $this->custom_frequency = (string) $routine->frequency;
+            }
         }
 
         private function setAssignedPreventiveRoutine()
@@ -306,7 +319,18 @@ class FormClientEquipment   extends  Component
             $this->markPreventiveRoutineAssigned($equipment, $clientEquipment);
         }
 
-        private function checkPreventiveService( $client_equipment )
+
+        private function validatePreventiveService( $client_equipment )
+        {
+            $schedules_service_order =   SchedulesServiceOrder::join('service_orders', 'service_orders.id', '=', 'schedules_has_service_orders.service_order_id')
+                ->where('schedules_has_service_orders.client_has_equipment_id', $client_equipment->id)
+                ->select('service_orders.*')
+                ->first();
+            if( $schedules_service_order &&  $schedules_service_order->status == 'Abierta'){
+                $this->disabledPreventiveService( $client_equipment );
+            }
+        }
+        private function disabledPreventiveService( $client_equipment )
         {
             if( $client_equipment->schedule_assigned){
                $this->disabled_preventive = true;

@@ -13,6 +13,7 @@
                 <div class="md:w-1/2 pr-0 md:pr-4 mb-4 md:mb-0">
                     <label for="nit" class="block text-gray-700 font-bold mb-2"  @if( $action && $routine_validator ) title="Rutina en uso no se puede editar"  @endif >Nombre*:</label>
                     <input wire:model.defer="name"  @if( $action && $routine_validator ) disabled @endif  type="text" id="name" name="name" class="focus:outline-none bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full  p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400  dark:focus:ring-blue-500 dark:focus:border-blue-500  mb-2">
+
                     <div class="h-4">
                         @error('name') <span class="text-red-400 text-sm">{{ $message }}</span> @enderror
                     </div>
@@ -21,12 +22,7 @@
 
                 <div class="md:w-1/2 pr-0 md:pr-4 mb-4 md:mb-0">
                     <label for="email" class="block text-gray-700 font-bold mb-2" title="Nomenclatura principal">Frecuencia (en días):</label>
-                    <select id="frequency_id" wire:model.defer="frequency" name="frequency" class="mb-2 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400  dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                        <option value="0">Seleccionar</option>
-                        @for($index = 1;$index <= 12; $index++)
-                            <option value="{{$index}}">{{$index}}</option>
-                        @endfor
-                    </select>
+                    <input id="frequency_id" wire:model.defer="frequency" name="frequency"  type="text"  class="focus:outline-none bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full  p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400  dark:focus:ring-blue-500 dark:focus:border-blue-500  mb-2">
                     <div class="h-4">
                         @error('frequency') <span class="text-red-400 text-sm">{{ $message }}</span> @enderror
                     </div>

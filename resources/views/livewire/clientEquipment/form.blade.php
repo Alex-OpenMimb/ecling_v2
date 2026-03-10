@@ -246,7 +246,7 @@
             <div class="md:flex md:items-center mb-4">
                 <div class="md:w-1/2 pr-0 md:pr-4 mb-4 md:mb-0">
                     <label for="preventive_routine_id" class="block text-gray-700 font-bold mb-2">Rutina preventiva:</label>
-                    <select id="preventive_routine_id" wire:model="preventive_routine_id" @if( $disabled_preventive ) disabled @endif name="preventive_routine_id" class="mb-2 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                    <select id="preventive_routine_id" wire:model.live="preventive_routine_id" @if( $disabled_preventive ) disabled @endif name="preventive_routine_id" class="mb-2 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500">
                         <option value="">Seleccionar</option>
                         @foreach($preventive_routine_lists as $routine)
                             <option wire:key="routine-{{$routine->id}}" value="{{$routine->id}}">{{$routine->name}}</option>
