@@ -79,6 +79,7 @@ class RoleSeeder extends Seeder
             'admin.corrective-management.edit',
             'admin.planner.schedule',
             'admin.planner',
+            'admin.visit',
             'admin.planner.corrective',
             'admin.service-order',
             'admin.service-order.schedule.create',

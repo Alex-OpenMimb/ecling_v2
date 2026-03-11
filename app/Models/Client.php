@@ -22,6 +22,11 @@ class Client extends Model
     ];
 
     //Relationships
+
+    public function visits()
+    {
+        return $this->hasMany(Visit::class);
+    }
     public function headquarters()
     {
         return $this->hasMany(Headquarter::class);
