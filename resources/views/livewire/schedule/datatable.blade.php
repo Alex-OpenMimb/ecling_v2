@@ -81,13 +81,7 @@
                                       @endif
                                       class="cursor-pointer"> {{$schedule->frequency}}</button> </x-table.row>
                 <x-table.row> {{$schedule->last_date}} </x-table.row>
-                <x-table.row>  <button type="button"  title="editar fecha"
-                                       @if($schedule->status === 'Agendada' || $schedule->status === 'Agendada-Orden')
-                                           wire:click="show_error_msm"
-                                       @else
-                                           onclick="Livewire.dispatch('openModal', { component: 'schedule.form-date',arguments:{schedule: {{$schedule->id}} } })"
-                                       @endif
-                                       class="cursor-pointer"> {{$schedule->next_date}}  </button>  </x-table.row>
+                <x-table.row> {{$schedule->next_date}} </x-table.row>
                 <x-table.row> {{$schedule->days}} </x-table.row>
                 <td   class="px-2 bg-neutral-100 group-odd:bg-white group-hover:bg-neutral-200">
                     <button  onclick="Livewire.dispatch('openModal', { component: 'schedule.observations',arguments:{schedule: {{$schedule->id}} } })" class="p-1 text-orange-900 rounded hover:bg-orange-900 hover:text-white" title="ver observaciones">

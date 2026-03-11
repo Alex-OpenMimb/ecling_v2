@@ -28,11 +28,15 @@ class CreatePreventiveRoutineEquipment
         $equipmentId = $this->getEquipmentId($equipmentClient);
         $frequency = $this->getFrequency($routineId, $customFrequency);
         ServicesSchedule::create_schedule( $equipmentClient, $routineId, $frequency);
-        return PreventiveRoutineEquipment::create([
-            'equipment_id' => $equipmentId,
-            'preventive_routine_id' => $routineId,
-            'custom_frequency' => $frequency,
-        ]);
+        return PreventiveRoutineEquipment::updateOrCreate(
+            [
+                'equipment_id' => $equipmentId,
+            ],
+            [
+                'preventive_routine_id' => $routineId,
+                'custom_frequency' => $frequency,
+            ]
+        );
     }
 
     protected function getEquipmentId(ClientsEquipments $clientEquipment): int
