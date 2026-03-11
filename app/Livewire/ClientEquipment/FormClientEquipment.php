@@ -2,7 +2,7 @@
 
 namespace App\Livewire\ClientEquipment;
 
-use App\Actions\ClientEquipment\CreateClientEquipment;
+use App\Actions\ClientEquipment\CreateVisits;
 use App\Actions\Equipment\CreateEquipment;
 use App\Actions\Helpers\StorePhoto;
 use App\Actions\PreventiveRoutineEquipment\CreatePreventiveRoutineEquipment;
@@ -252,7 +252,7 @@ class FormClientEquipment   extends  Component
                       'photo2_title_photo_id' =>  $this->photo2_title_photo_id,
                   ];
 
-                  $result = CreateClientEquipment::run($equipment, $clientEquipmentData);
+                  $result = CreateVisits::run($equipment, $clientEquipmentData);
                   $clientEquipment = $result['client_equipment'];
 
                   if ($this->preventive_routine_id) {
