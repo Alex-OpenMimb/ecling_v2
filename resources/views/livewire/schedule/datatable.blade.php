@@ -34,6 +34,9 @@
             <th class="px-2 text-left  text-black bg-neutral-50 dark:text-white dark:bg-neutral-800">
                 Equipos*
             </th>
+            <th class="px-2 text-left  text-black bg-neutral-50 dark:text-white dark:bg-neutral-800">
+               código*
+            </th>
             <th class="px-2 text-left text-black bg-neutral-50 dark:text-white dark:bg-neutral-800"
             >
                 Frecuencia
@@ -73,6 +76,7 @@
                             type="button"  title="ver equipo" class="cursor-pointer" > <div class="truncate-13">{{$schedule->headquarter_name}}</div> </button>
                 </x-table.row>
                 <x-table.row> <button    onclick="Livewire.dispatch('openModal', { component: 'client-equipment.show-client-equipment',arguments:{client_equipment_id: {{$schedule->equipment_id}}  } })" class="truncate-13 cursor-pointer" >  {{$schedule->equipment_name}} </button> </x-table.row>
+                <x-table.row>  {{$schedule->internal_id}}  </x-table.row>
                 <x-table.row> <button type="button"  title="Editar frecuencia"
                                       @if($schedule->status === 'Agendada' || $schedule->status === 'Agendada-Orden')
                                           wire:click="show_error_msm"
