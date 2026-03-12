@@ -4,7 +4,9 @@
             <div class="mb-4 md:mb-0">
                 <h2 class="text-lg font-bold">Programar Visitas</h2>
             </div>
-
+            <div class="flex gap-2">
+                <a   href="{{route('admin.visit.create')}}"  type="button" class="bg-white border border-blue-500 text-blue-500 px-4 py-2 rounded-md hover:bg-blue-500 hover:text-white transition duration-300">Crear</a>
+            </div>
 
         </div>
     </div>

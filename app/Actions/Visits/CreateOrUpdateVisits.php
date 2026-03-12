@@ -10,7 +10,7 @@ use App\Models\Location;
 use Illuminate\Http\UploadedFile;
 use Lorisleiva\Actions\Concerns\AsAction;
 
-class CreateVisits
+class CreateOrUpdateVisits
 {
     use AsAction;
 

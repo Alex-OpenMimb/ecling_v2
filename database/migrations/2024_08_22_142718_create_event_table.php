@@ -19,12 +19,12 @@ return new class extends Migration
             $table->string('start_hour')->nullable();
             $table->string('end_hour')->nullable();
             $table->boolean('closed')->default(0);
-            $table->enum('activity',['Preventiva','Correctiva','Instalación','Mixta']);
+            $table->enum('activity',['Preventiva','Correctiva','Instalación','Mixta','Otra']);
 
             $table->unsignedBigInteger('user_id');
             $table->foreign('user_id')->references('id')->on('users');
 
-            $table->boolean('service_order')->default(0);
+            $table->boolean('service_order')->default(0)->comment('Para indicar si es un evento de orden de servicio');
             $table->timestamps();
 
         });
