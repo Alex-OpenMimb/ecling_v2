@@ -32,6 +32,11 @@ class Client extends Model
         return $this->hasMany(Headquarter::class);
     }
 
+    public function quotation()
+    {
+        return $this->hasMany(Quotation::class);
+    }
+
 
     public function equipments()
     {

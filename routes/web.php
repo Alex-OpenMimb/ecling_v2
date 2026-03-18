@@ -33,6 +33,9 @@ use App\Livewire\EquipmentClass\Show as EquipmentClassShow;
 use App\Livewire\TitlePhoto\Form as TitlePhotoForm;
 use App\Livewire\TitlePhoto\Index as TitlePhotoIndex;
 use App\Livewire\TitlePhoto\Show as TitlePhotoShow;
+use App\Livewire\VisitReason\Form as VisitReasonForm;
+use App\Livewire\VisitReason\Index as VisitReasonIndex;
+use App\Livewire\VisitReason\Show as VisitReasonShow;
 use App\Livewire\User\FormUser;
 use App\Livewire\User\IndexUser;
 use App\Livewire\User\ProfileUser;
@@ -108,6 +111,11 @@ Route::middleware(['auth'])->prefix('admin')->group( function() {
     Route::get('configurations/title-photo/create', TitlePhotoForm::class)->middleware('can:admin.configurations')->name('admin.configurations.title-photo.create');
     Route::get('configurations/title-photo/{titlePhoto}/edit', TitlePhotoForm::class)->middleware('can:admin.configurations')->name('admin.configurations.title-photo.edit');
     Route::get('configurations/title-photo/{titlePhoto}', TitlePhotoShow::class)->middleware('can:admin.configurations')->name('admin.configurations.title-photo.show');
+
+    Route::get('configurations/visit-reasons', VisitReasonIndex::class)->middleware('can:admin.configurations')->name('admin.configurations.visit-reasons.index');
+    Route::get('configurations/visit-reasons/create', VisitReasonForm::class)->middleware('can:admin.configurations')->name('admin.configurations.visit-reasons.create');
+    Route::get('configurations/visit-reasons/{visitReason}/edit', VisitReasonForm::class)->middleware('can:admin.configurations')->name('admin.configurations.visit-reasons.edit');
+    Route::get('configurations/visit-reasons/{visitReason}', VisitReasonShow::class)->middleware('can:admin.configurations')->name('admin.configurations.visit-reasons.show');
 
 
 });

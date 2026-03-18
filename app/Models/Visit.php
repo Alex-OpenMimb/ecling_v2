@@ -18,6 +18,7 @@ class Visit extends Model
         'status',
         'event_id',
         'client_id',
+        'visit_reason_id',
         'headquarter_id',
     ];
 
@@ -37,6 +38,21 @@ class Visit extends Model
     public function headquarter()
     {
         return $this->belongsTo( Headquarter::class );
+    }
+
+    public function visitReason()
+    {
+        return $this->belongsTo( VisitReason::class, 'visit_reason_id' );
+    }
+
+    public function quotations()
+    {
+        return $this->belongsToMany(
+            Quotation::class,
+            'quotations_has_visits',
+            'visit_id',
+            'quotation_id'
+        );
     }
 
     public function users()

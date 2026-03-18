@@ -54,6 +54,11 @@ class Headquarter extends Model
        return $this->hasMany( GeneralReport::class );
     }
 
+    public function quotation()
+    {
+        return $this->hasMany(Quotation::class);
+    }
+
 
     //Mutator and accessor
     protected function contactName(): Attribute
