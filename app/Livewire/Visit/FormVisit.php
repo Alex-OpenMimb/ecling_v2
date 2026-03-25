@@ -4,6 +4,8 @@ namespace App\Livewire\Visit;
 
 use App\Actions\Events\CreateEvent;
 use App\Actions\Events\UpdateEvent;
+use App\Actions\Utils\ValidateDateNotBeforeToday;
+use App\Actions\Utils\ValidateHourRange;
 use App\Actions\Visits\CreateVisitsUsers;
 use App\Actions\Visits\CreateOrUpdateVisits;
 use App\Actions\Visits\UpdateVisitsUsers;
@@ -150,8 +152,26 @@ class FormVisit extends Component
         if ($this->headquarter_id === '') {
             $this->headquarter_id = null;
         }
+        try {
+            ValidateDateNotBeforeToday::run($this->date);
+        } catch (\InvalidArgumentException $e) {
+            toastr()->error($e->getMessage(), 'Error');
+
+            return;
+        }
+
+        try {
+            ValidateHourRange::run($this->start_time, $this->end_time);
+        } catch (\InvalidArgumentException $e) {
+            toastr()->error($e->getMessage(), 'Error');
+
+            return;
+        }
+
+
 
         $this->validate();
+
 
 
         $clientId = $this->client_id !== null ? (int) $this->client_id : null;
