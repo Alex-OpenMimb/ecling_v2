@@ -33,6 +33,9 @@ use App\Livewire\EquipmentClass\Show as EquipmentClassShow;
 use App\Livewire\TitlePhoto\Form as TitlePhotoForm;
 use App\Livewire\TitlePhoto\Index as TitlePhotoIndex;
 use App\Livewire\TitlePhoto\Show as TitlePhotoShow;
+use App\Livewire\QuotationStatus\Form as QuotationStatusForm;
+use App\Livewire\QuotationStatus\Index as QuotationStatusIndex;
+use App\Livewire\QuotationStatus\Show as QuotationStatusShow;
 use App\Livewire\VisitReason\Form as VisitReasonForm;
 use App\Livewire\VisitReason\Index as VisitReasonIndex;
 use App\Livewire\VisitReason\Show as VisitReasonShow;
@@ -116,6 +119,11 @@ Route::middleware(['auth'])->prefix('admin')->group( function() {
     Route::get('configurations/visit-reasons/create', VisitReasonForm::class)->middleware('can:admin.configurations')->name('admin.configurations.visit-reasons.create');
     Route::get('configurations/visit-reasons/{visitReason}/edit', VisitReasonForm::class)->middleware('can:admin.configurations')->name('admin.configurations.visit-reasons.edit');
     Route::get('configurations/visit-reasons/{visitReason}', VisitReasonShow::class)->middleware('can:admin.configurations')->name('admin.configurations.visit-reasons.show');
+
+    Route::get('configurations/quotation-status', QuotationStatusIndex::class)->middleware('can:admin.configurations')->name('admin.configurations.quotation-status.index');
+    Route::get('configurations/quotation-status/create', QuotationStatusForm::class)->middleware('can:admin.configurations')->name('admin.configurations.quotation-status.create');
+    Route::get('configurations/quotation-status/{quotationStatus}/edit', QuotationStatusForm::class)->middleware('can:admin.configurations')->name('admin.configurations.quotation-status.edit');
+    Route::get('configurations/quotation-status/{quotationStatus}', QuotationStatusShow::class)->middleware('can:admin.configurations')->name('admin.configurations.quotation-status.show');
 
 
 });
