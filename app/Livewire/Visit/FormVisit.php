@@ -10,6 +10,7 @@ use App\Actions\Visits\UpdateVisitsUsers;
 use App\Models\Client;
 use App\Models\Headquarter;
 use App\Models\Visit;
+use App\Models\VisitUser;
 use App\Models\VisitReason;
 use App\Models\User;
 use Illuminate\Validation\Rule;
@@ -43,13 +44,68 @@ class FormVisit extends Component
 
     public $users_list = [];
     public $users_ids = [];
-
-    public function mount(): void
+    public Visit $visit;
+    public function mount( Visit $visit ): void
     {
         $this->loadClients();
         $this->loadVisitReasons();
         $this->loadUsers();
 
+        $this->fill(
+            $visit->only( 'client_id','visit_reason_id','observations'),
+        );
+        if( $visit->id ){
+            $this->visit_id = $visit->id;
+            $this->loadSucursalFromVisit($visit);
+            $this->loadEventDateAndHoursFromVisit($visit);
+            $this->loadUsersFromVisitUsers($visit);
+        }
+
+    }
+
+    /**
+     * Carga la sucursal (headquarter) en el form y llena el listado de sucursales
+     * según el cliente del registro actual.
+     */
+    protected function loadSucursalFromVisit(Visit $visit): void
+    {
+        $this->headquarter_id = $visit->headquarter_id ? (string) $visit->headquarter_id : '';
+
+        if ($visit->client_id) {
+            $this->headquarters_list = Headquarter::where('client_id', $visit->client_id)
+                ->orderBy('name')
+                ->get(['id', 'name', 'slug']);
+        } else {
+            $this->headquarters_list = [];
+        }
+    }
+
+    /**
+     * Obtiene desde el event asociado la fecha y las horas.
+     */
+    protected function loadEventDateAndHoursFromVisit(Visit $visit): void
+    {
+        $visit->loadMissing('event');
+
+        $event = $visit->event;
+
+        $this->date = $event && $event->date
+            ? (is_string($event->date) ? $event->date : $event->date->format('Y-m-d'))
+            : '';
+
+        $this->start_time = $event->start_hour ?? '';
+        $this->end_time = $event->end_hour ?? '';
+    }
+
+    /**
+     * Obtiene desde `visits_users` los usuarios asignados a esta visita
+     * para marcarlos como checked en el listado.
+     */
+    protected function loadUsersFromVisitUsers(Visit $visit): void
+    {
+        $this->users_ids = VisitUser::where('visit_id', $visit->id)
+            ->pluck('user_id')
+            ->toArray();
     }
 
     protected function loadClients(): void
