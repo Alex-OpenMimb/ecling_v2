@@ -1,7 +1,7 @@
 <div class="max-h-screen overflow-y-auto">
     <div class="container mx-auto bg-gray-100 rounded-md p-4 flex justify-between items-center mt-10">
         <div class="flex flex-col">
-            <h2 class="text-lg font-bold">Programar visita</h2>
+            <h2 class="text-lg font-bold">{{ $visit_id ? 'Editar visita' : 'Programar visita' }}</h2>
         </div>
         <a href="{{ route('admin.visit.index') }}" title="atrás" class="p-1 text-blue-600 rounded hover:bg-blue-600 hover:text-white">
             <svg class="h-8 w-8 text-blue-600 hover:text-white" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
@@ -91,6 +91,24 @@
                 </div>
             </div>
 
+            {{-- Usuarios --}}
+            <div class="mb-4">
+                <div class="flex items-center justify-between mb-2">
+                    <h3 class="block text-gray-700 font-bold">Usuarios activos</h3>
+                    <div class="h-4">
+                        @error('users_ids') <span class="text-red-400 text-sm">{{ $message }}</span> @enderror
+                    </div>
+                </div>
+
+                <div class="flex-1 p-4 border border-gray-300 rounded overflow-y-auto h-40">
+                    @foreach($users_list as $user)
+                        <div class="flex cursor-pointer" wire:key="user-{{ $user->id }}">
+                            <input class="cursor-pointer" type="checkbox" value="{{ $user->id }}" wire:model.defer="users_ids">
+                            <p class="ml-2">{{ $user->name }}</p>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
 
             <div class="md:flex md:items-center mb-4 ">
 

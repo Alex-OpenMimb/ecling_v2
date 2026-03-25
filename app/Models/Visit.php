@@ -57,6 +57,6 @@ class Visit extends Model
 
     public function users()
     {
-        return $this->belongsToMany(User::class);
+        return $this->belongsToMany(User::class, 'visits_users', 'visit_id', 'user_id');
     }
 }

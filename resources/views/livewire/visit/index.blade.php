@@ -10,8 +10,8 @@
 
         </div>
     </div>
-    <div class="mx-2  px-4 py-3 mb-8 overflow-x-auto bg-white rounded-lg shadow-md dark:bg-gray-800">
-
+    <div class="mx-2 px-4 py-3 mb-8 overflow-x-auto bg-white rounded-lg shadow-md dark:bg-gray-800">
+        <livewire:visit.datatable/>
     </div>
 
 </div>

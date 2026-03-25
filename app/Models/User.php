@@ -65,7 +65,7 @@ class User extends Authenticatable
 
     public function visits()
     {
-        return $this->belongsToMany(Visit::class);
+        return $this->belongsToMany(Visit::class, 'visits_users', 'user_id', 'visit_id');
     }
 
     public function serviceOrders()

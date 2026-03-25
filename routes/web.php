@@ -91,8 +91,9 @@ Route::middleware(['auth'])->prefix('admin')->group( function() {
     Route::get('planner/create/corrective',FormEvent::class)->middleware('can:admin.planner.corrective')->name('admin.planner.corrective');
     Route::get('planner',IndexEvent::class)->middleware('can:admin.planner')->name('admin.planner');
 
-    Route::get('visit',\App\Livewire\Visit\IndexVisit::class)->middleware('can:admin.visit')->name('admin.visit.index');
-    Route::get('visit/create',\App\Livewire\Visit\FormVisit::class)->middleware('can:admin.visit.create')->name('admin.visit.create');
+    Route::get('visit', \App\Livewire\Visit\IndexVisit::class)->middleware('can:admin.visit')->name('admin.visit.index');
+    Route::get('visit/create', \App\Livewire\Visit\FormVisit::class)->middleware('can:admin.visit.create')->name('admin.visit.create');
+    Route::get('visit/{visit}/edit', \App\Livewire\Visit\FormVisit::class)->middleware('can:admin.visit.edit')->name('admin.visit.edit');
 
 
     Route::get('services-order',IndexServiceOrder::class)->middleware('can:admin.service-order')->name('admin.service-order');

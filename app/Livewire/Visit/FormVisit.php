@@ -2,30 +2,54 @@
 
 namespace App\Livewire\Visit;
 
+use App\Actions\Events\CreateEvent;
+use App\Actions\Events\UpdateEvent;
+use App\Actions\Visits\CreateVisitsUsers;
+use App\Actions\Visits\CreateOrUpdateVisits;
+use App\Actions\Visits\UpdateVisitsUsers;
 use App\Models\Client;
 use App\Models\Headquarter;
+use App\Models\Visit;
 use App\Models\VisitReason;
+use App\Models\User;
 use Illuminate\Validation\Rule;
+use Livewire\Attributes\Locked;
 use Livewire\Component;
 
 class FormVisit extends Component
 {
+    #[Locked]
+    public ?int $visit_id = null;
+
     public $client_id = '';
+
     public $headquarter_id = '';
+
     public $visit_reason_id = '';
+
     public $date = '';
+
     public $observations = '';
+
     public $start_time = '';
+
     public $end_time = '';
 
     public $clients_list = [];
+
     public $headquarters_list = [];
+
     public $visit_reasons_list = [];
+
+    public $users_list = [];
+    public $users_ids = [];
 
     public function mount(): void
     {
         $this->loadClients();
         $this->loadVisitReasons();
+        $this->loadUsers();
+
     }
 
     protected function loadClients(): void
@@ -41,11 +65,20 @@ class FormVisit extends Component
             ->get(['id', 'name']);
     }
 
+    protected function loadUsers(): void
+    {
+        $this->users_list = User::query()
+            ->where('status', true)
+            ->orderBy('name')
+            ->get(['id', 'name']);
+    }
+
     public function updatedClientId($value): void
     {
         $this->headquarter_id = '';
         if (empty($value)) {
             $this->headquarters_list = [];
+
             return;
         }
         $this->headquarters_list = Headquarter::where('client_id', $value)
@@ -55,21 +88,78 @@ class FormVisit extends Component
 
     public function store(): void
     {
+        if ($this->client_id === '') {
+            $this->client_id = null;
+        }
+        if ($this->headquarter_id === '') {
+            $this->headquarter_id = null;
+        }
+
         $this->validate();
 
 
+        $clientId = $this->client_id !== null ? (int) $this->client_id : null;
+        $headquarterId = $this->headquarter_id !== null ? (int) $this->headquarter_id : null;
 
+        if ($this->visit_id) {
+            $visit = Visit::with('event')->findOrFail($this->visit_id);
+
+            UpdateEvent::run($visit->event_id, [
+                'date' => $this->date,
+                'start_hour' => $this->start_time,
+                'end_hour' => $this->end_time,
+            ]);
+
+            $visit = CreateOrUpdateVisits::run([
+                'id' => $visit->id,
+                'event_id' => $visit->event_id,
+                'client_id' => $clientId,
+                'headquarter_id' => $headquarterId,
+                'visit_reason_id' => (int) $this->visit_reason_id,
+                'observations' => $this->observations,
+                'status' => $visit->status,
+            ]);
+
+            UpdateVisitsUsers::run($visit->id, $this->users_ids);
+
+            toastr()->success('La visita se ha actualizado con éxito!', 'Felicitaciones');
+        } else {
+            $event = CreateEvent::run([
+                'date' => $this->date,
+                'start_hour' => $this->start_time,
+                'end_hour' => $this->end_time,
+                'activity' => 'Otra',
+                'user_id' => auth()->id(),
+            ]);
+
+            $visit = CreateOrUpdateVisits::run([
+                'event_id' => $event->id,
+                'client_id' => $clientId,
+                'headquarter_id' => $headquarterId,
+                'visit_reason_id' => (int) $this->visit_reason_id,
+                'observations' => $this->observations,
+                'status' => true,
+            ]);
+
+            CreateVisitsUsers::run($visit->id, $this->users_ids);
+
+            toastr()->success('La visita se ha registrado con éxito!', 'Felicitaciones');
+        }
+
+        $this->redirect(route('admin.visit.index'));
     }
 
     public function rules(): array
     {
         return [
-            'client_id' => 'exists:clients,id',
-            'headquarter_id' => 'exists:headquarters,id',
+            'client_id' => ['nullable', 'exists:clients,id'],
+            'headquarter_id' => ['nullable', 'exists:headquarters,id'],
             'visit_reason_id' => [
                 'required',
                 Rule::exists('visit_reasons', 'id')->where('status', true),
             ],
+            'users_ids' => ['required', 'array', 'min:1'],
+            'users_ids.*' => ['integer', 'exists:users,id'],
             'date' => 'required|date',
             'observations' => 'nullable|string',
             'start_time' => 'required|date_format:H:i',
@@ -84,6 +174,10 @@ class FormVisit extends Component
             'headquarter_id.exists' => 'La sucursal seleccionada no es válida.',
             'visit_reason_id.required' => 'La razón de visita es requerida.',
             'visit_reason_id.exists' => 'La razón de visita seleccionada no es válida o está inactiva.',
+            'users_ids.required' => 'Debes seleccionar al menos un usuario activo.',
+            'users_ids.array' => 'Los usuarios seleccionados no son válidos.',
+            'users_ids.min' => 'Debes seleccionar al menos un usuario activo.',
+            'users_ids.*.exists' => 'Alguno de los usuarios seleccionados no es válido.',
             'date.required' => 'La fecha es requerida.',
             'date.date' => 'La fecha no tiene un formato válido.',
             'observations.string' => 'Las observaciones deben ser texto.',
