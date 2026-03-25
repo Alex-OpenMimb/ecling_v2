@@ -41,6 +41,20 @@
                 </div>
             </div>
 
+            {{-- Razón de visita --}}
+            <div class="mb-4">
+                <label for="visit_reason_id" class="block text-gray-700 font-bold mb-2">Razón de visita:</label>
+                <select id="visit_reason_id" wire:model="visit_reason_id" name="visit_reason_id" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                    <option value="">Seleccionar razón</option>
+                    @foreach($visit_reasons_list as $visitReason)
+                        <option wire:key="visit-reason-{{ $visitReason->id }}" value="{{ $visitReason->id }}">{{ $visitReason->name }}</option>
+                    @endforeach
+                </select>
+                <div class="h-4">
+                    @error('visit_reason_id') <span class="text-red-400 text-sm">{{ $message }}</span> @enderror
+                </div>
+            </div>
+
             {{-- Fecha --}}
             <div class="mb-4">
                 <label for="date" class="block text-gray-700 font-bold mb-2">Fecha:</label>

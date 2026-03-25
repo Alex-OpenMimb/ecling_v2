@@ -40,17 +40,17 @@ return new class extends Migration
         Schema::create('visits', function (Blueprint $table) {
             $table->id();
 
-            $table->string('client_name');
-            $table->string('headquarter_name');
+            $table->string('client_name')->nullable();
+            $table->string('headquarter_name')->nullable();
             $table->text('observations')->nullable();
             $table->text('report')->nullable();
             $table->boolean('status')->default(1);
 
             $table->unsignedBigInteger('event_id');
             $table->foreign('event_id')->references('id')->on('events');
-            $table->unsignedBigInteger('client_id');
+            $table->unsignedBigInteger('client_id')->nullable();
             $table->foreign('client_id')->references('id')->on('clients');
-            $table->unsignedBigInteger('headquarter_id');
+            $table->unsignedBigInteger('headquarter_id')->nullable();
             $table->foreign('headquarter_id')->references('id')->on('headquarters');
             $table->unsignedBigInteger('visit_reason_id');
             $table->foreign('visit_reason_id')->references('id')->on('visit_reasons');
