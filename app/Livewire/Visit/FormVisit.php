@@ -204,7 +204,7 @@ class FormVisit extends Component
                 'date' => $this->date,
                 'start_hour' => $this->start_time,
                 'end_hour' => $this->end_time,
-                'activity' => 'Otra',
+                'activity' => 'Visita',
                 'user_id' => auth()->id(),
             ]);
 

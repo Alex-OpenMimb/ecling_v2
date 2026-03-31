@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('start_hour')->nullable();
             $table->string('end_hour')->nullable();
             $table->boolean('closed')->default(0);
-            $table->enum('activity',['Preventiva','Correctiva','Instalación','Mixta','Otra']);
+            $table->enum('activity',['Preventiva','Correctiva','Instalación','Mixta','Visita']);
 
             $table->unsignedBigInteger('user_id');
             $table->foreign('user_id')->references('id')->on('users');

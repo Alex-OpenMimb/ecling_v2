@@ -62,7 +62,7 @@
                 <x-table.row> <div class="" style="width: 200px">  @if($event->serial)  {{$event->serial}} @else Sin orden @endif  </div>  </x-table.row>
                 <x-table.row> {{$event->activity}} </x-table.row>
                 <td   class="px-2 flex  bg-neutral-100 group-odd:bg-white group-hover:bg-neutral-200 hover:text-white">
-                    <button  onclick="Livewire.dispatch('openModal', { component: 'event.users',arguments:{event_id: {{$event->id}} } })" class="p-1 text-green-500 rounded hover:bg-green-500 hover:text-white" title="ver observaciones">
+                    <button type="button" wire:click="$dispatch('openModal', { component: 'event.users', arguments: { event_id: {{ $event->id }}, visit_id: @json($event->visit_id) } })" class="p-1 text-green-500 rounded hover:bg-green-500 hover:text-white" title="Usuarios (evento / visita)">
                         <svg class="h-5 w-5 text-green-500 hover:text-white"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round">  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />  <circle cx="9" cy="7" r="4" />  <path d="M23 21v-2a4 4 0 0 0-3-3.87" />  <path d="M16 3.13a4 4 0 0 1 0 7.75" /></svg>
                     </button>
                 </td>
@@ -74,9 +74,19 @@
                         <a  onclick="Livewire.dispatch('openModal', { component: 'event.editEvent',arguments:{event:{{$event->id}} } })" title="editar" class="cursor-pointer  p-1 text-blue-600 rounded hover:bg-blue-600 hover:text-white">
                             <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path></svg>
                         </a>
-                        <a @if( !$event->service_order ) wire:click="create_order_by_service('{{$event->id}}')"  @else href="{{route('admin.service-order')}}"  @endif class="p-1 text-blue-600 rounded hover:bg-blue-500 hover:text-white cursor-pointer">
-                            <svg class="h-5 w-5 text-blue-500 hover:text-white"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round">  <polyline points="9 11 12 14 22 4" />  <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" /></svg>
-                        </a>
+                        @if( $event->activity != 'Visita'  )
+                            <a @if( !$event->service_order ) wire:click="create_order_by_service('{{$event->id}}')"  @else href="{{route('admin.service-order')}}"  @endif class="p-1 text-blue-600 rounded hover:bg-blue-500 hover:text-white cursor-pointer">
+                                <svg class="h-5 w-5 text-blue-500 hover:text-white"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round">  <polyline points="9 11 12 14 22 4" />  <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" /></svg>
+                            </a>
+
+                        @else
+                            @if(!empty($event->visit_id))
+                                <a href="{{ route('admin.visit.manage', ['visit' => $event->visit_id]) }}" class="p-1 text-blue-600 rounded hover:bg-blue-500 hover:text-white cursor-pointer" title="Gestionar visita">
+                                    <svg class="h-5 w-5 text-blue-500 hover:text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4" /><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" /></svg>
+                                </a>
+                            @endif
+                        @endif
+
                     </div>
                 </x-table.row>
 

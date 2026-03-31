@@ -22,7 +22,7 @@ class CreateEvent
             'day' => null,
             'start_hour' => null,
             'end_hour' => null,
-            'activity' => 'Otra',
+            'activity' => 'Visita',
             'user_id' => auth()->id(),
             'service_order' => false,
             'closed' => false,
