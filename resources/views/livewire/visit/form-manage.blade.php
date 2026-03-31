@@ -18,6 +18,38 @@
         @if(!$visit)
             <p class="text-gray-600 dark:text-gray-300">No hay una visita seleccionada.</p>
         @else
+            <div class="mb-6">
+                <p class="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-1">Razón de visita</p>
+                <p class="text-lg font-semibold text-gray-900 dark:text-white">
+                    {{ $visit->visitReason?->name ?? '—' }}
+                </p>
+            </div>
+
+            <div class="mb-4">
+                <label for="report" class="block text-gray-700 dark:text-gray-200 font-bold mb-2">Reporte</label>
+                <textarea id="report" wire:model="report" name="report" rows="4" class="focus:outline-none bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Reporte de la visita…"></textarea>
+            </div>
+
+            <div class="mb-4">
+                <label class="inline-flex items-center cursor-pointer">
+                    <input type="checkbox" wire:model.live="generate_quotation" class="rounded border-gray-300 text-blue-600 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700">
+                    <span class="ml-2 text-gray-700 dark:text-gray-200 font-medium">Datos para generar una cotización</span>
+                </label>
+            </div>
+
+            @if($generate_quotation)
+                <div class="mb-6 p-4 border border-gray-200 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-900/40 space-y-4">
+                    <div>
+                        <label for="quotation_expiration_date" class="block text-gray-700 dark:text-gray-200 font-bold mb-2">Fecha de expiración</label>
+                        <input type="date" id="quotation_expiration_date" wire:model="quotation_expiration_date" name="quotation_expiration_date" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                    </div>
+                    <div>
+                        <label for="quotation_description" class="block text-gray-700 dark:text-gray-200 font-bold mb-2">Descripción</label>
+                        <textarea id="quotation_description" wire:model="quotation_description" name="quotation_description" rows="4" class="focus:outline-none bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Descripción para la cotización…"></textarea>
+                    </div>
+                </div>
+            @endif
+
             <div class="mb-4">
                 <label for="client_id" class="block text-gray-700 dark:text-gray-200 font-bold mb-2">Cliente</label>
                 <select id="client_id" wire:model.live="client_id" name="client_id" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-500 dark:focus:border-blue-500">

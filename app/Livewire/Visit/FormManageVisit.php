@@ -21,6 +21,14 @@ class FormManageVisit extends Component
 
     public $headquarters_list = [];
 
+    public string $report = '';
+
+    public bool $generate_quotation = false;
+
+    public string $quotation_expiration_date = '';
+
+    public string $quotation_description = '';
+
     public function mount(?Visit $visit = null): void
     {
         $this->visit = $visit;
@@ -30,6 +38,10 @@ class FormManageVisit extends Component
         if ($visit === null) {
             return;
         }
+
+        $visit->loadMissing('visitReason');
+
+        $this->report = $visit->report ?? '';
 
         if ($visit->client_id) {
             $this->client_id = (string) $visit->client_id;
