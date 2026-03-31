@@ -26,7 +26,6 @@ class FormEquipment extends Component
 
     public function mount(Equipment $equipment)
     {
-        Log::info('TEST EQUIPOS - 1',['data'=> $equipment]);
         if( $equipment->id ){
             $this->fill(
                 $equipment->only('id','description','name','status',
