@@ -53,31 +53,26 @@ class Datatable extends Component
         $queries = trim($this->query);
 
         return Visit::query()
-            ->select([
-                'id',
-                'client_name',
-                'headquarter_name',
-                'observations',
-                'status',
-                'visit_reason_id',
-                'event_id',
-                'created_at',
+            ->select('visits.*')
+            ->addSelect([
+                'events.closed as event_closed',
+                'events.date as event_date',
             ])
+            ->leftJoin('events', 'visits.event_id', '=', 'events.id')
             ->with([
                 'visitReason:id,name',
-                'event:id,date',
             ])
             ->when($queries, function ($q) use ($queries) {
                 $q->where(function ($q) use ($queries) {
-                    $q->where('client_name', 'like', '%'.$queries.'%')
-                        ->orWhere('headquarter_name', 'like', '%'.$queries.'%')
-                        ->orWhere('observations', 'like', '%'.$queries.'%')
+                    $q->where('visits.client_name', 'like', '%'.$queries.'%')
+                        ->orWhere('visits.headquarter_name', 'like', '%'.$queries.'%')
+                        ->orWhere('visits.observations', 'like', '%'.$queries.'%')
                         ->orWhereHas('visitReason', function ($q) use ($queries) {
                             $q->where('name', 'like', '%'.$queries.'%');
                         });
                 });
             })
-            ->orderByDesc('id')
+            ->orderByDesc('visits.id')
             ->simplePaginate($this->amount);
     }
 

@@ -44,19 +44,29 @@
                         <div class="truncate-13" title="{{ $visit->visitReason?->name ?? '—' }}">{{ $visit->visitReason?->name ?? '—' }}</div>
                     </x-table.row>
                     <x-table.row>
-                        <span>{{ $visit->event?->date ? \Illuminate\Support\Carbon::parse($visit->event->date)->format('d/m/Y') : '—' }}</span>
+                        <span>{{ $visit->event_date ? \Illuminate\Support\Carbon::parse($visit->event_date)->format('d/m/Y') : '—' }}</span>
                     </x-table.row>
                     <x-table.row>
                         <x-buttons.toggle status="{{ $visit->status }}" slug="{{ $visit->id }}"></x-buttons.toggle>
                     </x-table.row>
                     <x-table.row>
                         <div class="flex gap-4">
-                            <a href="{{ route('admin.visit.edit', $visit->id) }}"
-                               class="p-1 text-blue-600 rounded hover:bg-blue-600 hover:text-white" title="editar" type="button">
-                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path>
-                                </svg>
-                            </a>
+                            @if($visit->event_closed)
+                                <span class="p-1 text-gray-300 cursor-not-allowed rounded"
+                                      title="No se puede editar: el evento asociado está cerrado."
+                                      aria-disabled="true">
+                                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path>
+                                    </svg>
+                                </span>
+                            @else
+                                <a href="{{ route('admin.visit.edit', $visit->id) }}"
+                                   class="p-1 text-blue-600 rounded hover:bg-blue-600 hover:text-white" title="editar" type="button">
+                                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path>
+                                    </svg>
+                                </a>
+                            @endif
                         </div>
                     </x-table.row>
                 </tr>
