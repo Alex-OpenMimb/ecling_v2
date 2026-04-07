@@ -83,8 +83,10 @@ class FormManageVisit extends Component
         }
 
         $this->validate();
-
-        if (! QuotationStatus::query()->where('name', 'Abierta')->where('status', true)->exists()) {
+        if ($this->generate_quotation) {
+            $this->createQuotation();
+        }
+        if ( $this->generate_quotation && ! QuotationStatus::query()->where('name', 'Abierta')->where('status', true)->exists()) {
             toastr()->error(
                 'No existe un estado de cotización "Abierta" activo. Debes crear ese registro en quotation_status.',
                 'Error'
