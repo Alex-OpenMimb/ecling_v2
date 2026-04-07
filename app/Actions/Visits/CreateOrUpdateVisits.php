@@ -11,14 +11,6 @@ class CreateOrUpdateVisits
 {
     use AsAction;
 
-    /**
-     * Crea o actualiza un registro en Visit.
-     * Si se recibe 'id' se actualiza; si no, se crea.
-     * client_name y headquarter_name se resuelven desde client_id/headquarter_id si no se envían.
-     * client_id y headquarter_id pueden ser null.
-     *
-     * @param  array  $data  [ id?, event_id, client_id?, headquarter_id?, visit_reason_id, observations?, status?, client_name?, headquarter_name? ]
-     */
     public function handle(array $data): Visit
     {
         $data = array_merge([
@@ -31,6 +23,7 @@ class CreateOrUpdateVisits
             'status' => true,
             'client_name' => null,
             'headquarter_name' => null,
+            'report' => null,
         ], $data);
 
         $clientId = $data['client_id'] !== null && $data['client_id'] !== ''
@@ -54,6 +47,7 @@ class CreateOrUpdateVisits
             'status' => (bool) $data['status'],
             'client_name' => $resolvedClientName,
             'headquarter_name' => $resolvedHeadquarterName,
+            'report' => $data['report'],
         ];
 
         return Visit::updateOrCreate(

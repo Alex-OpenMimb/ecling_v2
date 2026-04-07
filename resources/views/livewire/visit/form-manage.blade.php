@@ -18,6 +18,7 @@
         @if(!$visit)
             <p class="text-gray-600 dark:text-gray-300">No hay una visita seleccionada.</p>
         @else
+            <form wire:submit.prevent="save">
             <div class="mb-6">
                 <p class="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-1">Razón de visita</p>
                 <p class="text-lg font-semibold text-gray-900 dark:text-white">
@@ -28,6 +29,9 @@
             <div class="mb-4">
                 <label for="report" class="block text-gray-700 dark:text-gray-200 font-bold mb-2">Reporte</label>
                 <textarea id="report" wire:model="report" name="report" rows="4" class="focus:outline-none bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Reporte de la visita…"></textarea>
+                <div class="h-4">
+                    @error('report') <span class="text-red-400 text-sm">{{ $message }}</span> @enderror
+                </div>
             </div>
 
             <div class="mb-4">
@@ -42,10 +46,16 @@
                     <div>
                         <label for="quotation_expiration_date" class="block text-gray-700 dark:text-gray-200 font-bold mb-2">Fecha de expiración</label>
                         <input type="date" id="quotation_expiration_date" wire:model="quotation_expiration_date" name="quotation_expiration_date" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                        <div class="h-4 mt-1">
+                            @error('quotation_expiration_date') <span class="text-red-400 text-sm">{{ $message }}</span> @enderror
+                        </div>
                     </div>
                     <div>
                         <label for="quotation_description" class="block text-gray-700 dark:text-gray-200 font-bold mb-2">Descripción</label>
                         <textarea id="quotation_description" wire:model="quotation_description" name="quotation_description" rows="4" class="focus:outline-none bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Descripción para la cotización…"></textarea>
+                        <div class="h-4 mt-1">
+                            @error('quotation_description') <span class="text-red-400 text-sm">{{ $message }}</span> @enderror
+                        </div>
                     </div>
                 </div>
             @endif
@@ -58,6 +68,9 @@
                         <option wire:key="client-{{ $client->id }}" value="{{ $client->id }}">{{ $client->name }}</option>
                     @endforeach
                 </select>
+                <div class="h-4">
+                    @error('client_id') <span class="text-red-400 text-sm">{{ $message }}</span> @enderror
+                </div>
             </div>
 
             <div class="mb-4">
@@ -68,7 +81,18 @@
                         <option wire:key="headquarter-{{ $headquarter->id }}" value="{{ $headquarter->id }}">{{ $headquarter->name }}</option>
                     @endforeach
                 </select>
+                <div class="h-4">
+                    @error('headquarter_id') <span class="text-red-400 text-sm">{{ $message }}</span> @enderror
+                </div>
             </div>
+
+            <div class="md:flex md:items-center mb-4 mt-6">
+                <div class="md:w-1/2">
+                    <x-buttons.save content="Guardar"></x-buttons.save>
+                    <div wire:loading class="mt-2"><span class="text-gray-400">Guardando...</span></div>
+                </div>
+            </div>
+            </form>
         @endif
     </div>
 </div>
