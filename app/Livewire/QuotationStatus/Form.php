@@ -21,6 +21,15 @@ class Form extends Component
     {
         $this->quotationStatus = $quotationStatus?->exists ? $quotationStatus : new QuotationStatus();
 
+        if ($this->quotationStatus->exists && $this->quotationStatus->quotations()->exists()) {
+            toastr()->error(
+                'No puedes editar este estado porque está asignado a una o más cotizaciones.',
+                'Acción no permitida'
+            );
+
+            return $this->redirect(route('admin.configurations.quotation-status.index'));
+        }
+
         $this->id = $this->quotationStatus->id;
         $this->name = $this->quotationStatus->name ?? '';
         $this->description = $this->quotationStatus->description ?? '';
@@ -48,6 +57,15 @@ class Form extends Component
     public function save()
     {
         $this->validate();
+
+        if ($this->quotationStatus->exists && $this->quotationStatus->quotations()->exists()) {
+            toastr()->error(
+                'No puedes guardar cambios: este estado está asignado a una o más cotizaciones.',
+                'Acción no permitida'
+            );
+
+            return;
+        }
 
         $payload = [
             'name' => trim($this->name),

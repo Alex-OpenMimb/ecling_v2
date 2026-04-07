@@ -11,6 +11,7 @@ class Show extends Component
 
     public function mount(QuotationStatus $quotationStatus): void
     {
+        $quotationStatus->loadCount('quotations');
         $this->quotationStatus = $quotationStatus;
     }
 

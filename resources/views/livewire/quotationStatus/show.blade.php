@@ -11,10 +11,17 @@
                 </p>
             </div>
             <div class="flex gap-2">
-                <a href="{{ route('admin.configurations.quotation-status.edit', $quotationStatus->id) }}"
-                   class="inline-flex items-center px-4 py-2 text-sm font-semibold text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-md">
-                    Editar
-                </a>
+                @if($quotationStatus->quotations_count > 0)
+                    <span class="inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-400 bg-gray-100 rounded-md cursor-not-allowed"
+                          title="No se puede editar: este estado está asignado a una o más cotizaciones.">
+                        Editar
+                    </span>
+                @else
+                    <a href="{{ route('admin.configurations.quotation-status.edit', $quotationStatus->id) }}"
+                       class="inline-flex items-center px-4 py-2 text-sm font-semibold text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-md">
+                        Editar
+                    </a>
+                @endif
                 <a href="{{ route('admin.configurations.quotation-status.index') }}"
                    class="inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-md">
                     Volver

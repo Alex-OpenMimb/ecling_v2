@@ -44,7 +44,9 @@ class Datatable extends Component
     {
         $queries = trim($this->query);
 
-        return QuotationStatus::select('id', 'name', 'description', 'status', 'created_at')
+        return QuotationStatus::query()
+            ->select('id', 'name', 'description', 'status', 'created_at')
+            ->withCount('quotations')
             ->when($queries, function ($query) use ($queries) {
                 $query->where('name', 'like', '%'.$queries.'%');
             })
