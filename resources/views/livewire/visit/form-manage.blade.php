@@ -62,7 +62,14 @@
 
             <div class="mb-4">
                 <label for="client_id" class="block text-gray-700 dark:text-gray-200 font-bold mb-2">Cliente</label>
-                <select id="client_id" disabled wire:model.live="client_id" name="client_id" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                <select id="client_id"
+                        wire:model.live="client_id"
+                        name="client_id"
+                        @disabled($lock_client_select)
+                        @class([
+                            'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-500 dark:focus:border-blue-500',
+                            'opacity-60 cursor-not-allowed' => $lock_client_select,
+                        ])>
                     <option value="">Seleccionar cliente</option>
                     @foreach($clients_list as $client)
                         <option wire:key="client-{{ $client->id }}" value="{{ $client->id }}">{{ $client->name }}</option>
@@ -75,7 +82,14 @@
 
             <div class="mb-4">
                 <label for="headquarter_id" class="block text-gray-700 dark:text-gray-200 font-bold mb-2">Sucursal</label>
-                <select id="headquarter_id" disabled wire:model="headquarter_id" name="headquarter_id" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-500 dark:focus:border-blue-500" @if(!$client_id) disabled @endif>
+                <select id="headquarter_id"
+                        wire:model="headquarter_id"
+                        name="headquarter_id"
+                        @disabled($lock_headquarter_select || ! $client_id)
+                        @class([
+                            'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-500 dark:focus:border-blue-500',
+                            'opacity-60 cursor-not-allowed' => $lock_headquarter_select || ! $client_id,
+                        ])>
                     <option value="">Seleccionar sucursal</option>
                     @foreach($headquarters_list as $headquarter)
                         <option wire:key="headquarter-{{ $headquarter->id }}" value="{{ $headquarter->id }}">{{ $headquarter->name }}</option>

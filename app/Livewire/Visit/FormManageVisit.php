@@ -37,6 +37,12 @@ class FormManageVisit extends Component
 
     public string $quotation_description = '';
 
+    /** Si la visita ya tenía cliente al cargar, el select de cliente queda bloqueado. */
+    public bool $lock_client_select = false;
+
+    /** Si la visita ya tenía sucursal al cargar, el select de sucursal queda bloqueado. */
+    public bool $lock_headquarter_select = false;
+
     public function mount(?Visit $visit = null): void
     {
         $this->visit = $visit;
@@ -48,6 +54,9 @@ class FormManageVisit extends Component
         }
 
         $visit->loadMissing('visitReason');
+
+        $this->lock_client_select = (bool) $visit->client_id;
+        $this->lock_headquarter_select = (bool) $visit->headquarter_id;
 
         $this->report = $visit->report ?? '';
 
