@@ -3,6 +3,7 @@
 namespace App\Livewire\Visit;
 
 use App\Actions\Quotations\CreateOrUpdateQuotation;
+use App\Actions\Quotations\CreateQuotationsHasVisits;
 use App\Actions\Utils\GenerateNextQuotationNumber;
 use App\Actions\Visits\CreateOrUpdateVisits;
 use App\Models\Client;
@@ -83,9 +84,6 @@ class FormManageVisit extends Component
         }
 
         $this->validate();
-        if ($this->generate_quotation) {
-            $this->createQuotation();
-        }
         if ( $this->generate_quotation && ! QuotationStatus::query()->where('name', 'Abierta')->where('status', true)->exists()) {
             toastr()->error(
                 'No existe un estado de cotización "Abierta" activo. Debes crear ese registro en quotation_status.',
@@ -129,7 +127,7 @@ class FormManageVisit extends Component
 
         $number = GenerateNextQuotationNumber::run();
 
-        CreateOrUpdateQuotation::run([
+        $quotation = CreateOrUpdateQuotation::run([
             'number' => $number,
             'date' => now(),
             'expiration_date' => Carbon::parse($this->quotation_expiration_date)->startOfDay(),
@@ -142,6 +140,8 @@ class FormManageVisit extends Component
             'client_id' => (int) $this->client_id,
             'headquarter_id' => (int) $this->headquarter_id,
         ]);
+
+        CreateQuotationsHasVisits::run($quotation->id, $this->visit->id);
     }
 
     public function rules(): array
