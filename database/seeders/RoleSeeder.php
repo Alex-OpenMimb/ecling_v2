@@ -48,6 +48,7 @@ class RoleSeeder extends Seeder
     {
         $PERMISSIONS = [
             'admin.users',
+            'admin.quotations',
             'admin.create.user',
             'admin.edit.user',
             'admin.profile.user',

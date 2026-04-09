@@ -33,6 +33,9 @@ use App\Livewire\EquipmentClass\Show as EquipmentClassShow;
 use App\Livewire\TitlePhoto\Form as TitlePhotoForm;
 use App\Livewire\TitlePhoto\Index as TitlePhotoIndex;
 use App\Livewire\TitlePhoto\Show as TitlePhotoShow;
+use App\Livewire\Quotation\FormManage as QuotationFormManage;
+use App\Livewire\Quotation\Index as QuotationIndex;
+use App\Livewire\Quotation\Show as QuotationShow;
 use App\Livewire\QuotationStatus\Form as QuotationStatusForm;
 use App\Livewire\QuotationStatus\Index as QuotationStatusIndex;
 use App\Livewire\QuotationStatus\Show as QuotationStatusShow;
@@ -98,6 +101,9 @@ Route::middleware(['auth'])->prefix('admin')->group( function() {
     Route::get('visit/{visit}', VisitShow::class)->middleware('can:admin.visit')->name('admin.visit.show');
     Route::get('visit/{visit}/edit', \App\Livewire\Visit\FormVisit::class)->middleware('can:admin.visit.edit')->name('admin.visit.edit');
 
+    Route::get('quotations', QuotationIndex::class)->middleware('can:admin.quotations')->name('admin.quotations');
+    Route::get('quotations/{quotation}/manage', QuotationFormManage::class)->middleware('can:admin.quotations')->name('admin.quotations.manage');
+    Route::get('quotations/{quotation}', QuotationShow::class)->middleware('can:admin.quotations')->name('admin.quotations.show');
 
     Route::get('services-order',IndexServiceOrder::class)->middleware('can:admin.service-order')->name('admin.service-order');
     Route::get('services-order/create/schedule',FormServiceOrder::class)->middleware('can:admin.service-order.schedule.create')->name('admin.service-order.schedule.create');
