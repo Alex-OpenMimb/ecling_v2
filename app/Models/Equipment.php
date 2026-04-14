@@ -84,18 +84,20 @@ class Equipment extends Model
 
     public function volts()
     {
-        return $this->belongsTo( Volt::class );
+        return $this->belongsTo( Volt::class,'volt_id' );
     }
 
     public function amperes()
     {
-        return $this->belongsTo( Ampere::class );
+        return $this->belongsTo( Ampere::class,'ampere_id' );
     }
 
 
     public function clients()
     {
-        return  $this->belongsToMany( Client::class );
+        return  $this->belongsToMany( Client::class,  'ClientsEquipments',
+            'equipment_id',
+            'client_id' );
     }
 
     public function preventiveRoutines()

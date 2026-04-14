@@ -29,6 +29,11 @@ class Headquarter extends Model
     const LOCATION = ['Sala','Cocina','Bodega','Salón de eventos'];
 
     //Relationships
+
+    public function visits()
+    {
+        return $this->hasMany(Visit::class);
+    }
     public function client()
     {
         return $this->belongsTo(Client::class);
@@ -47,6 +52,11 @@ class Headquarter extends Model
     public function generalReports()
     {
        return $this->hasMany( GeneralReport::class );
+    }
+
+    public function quotation()
+    {
+        return $this->hasMany(Quotation::class);
     }
 
 

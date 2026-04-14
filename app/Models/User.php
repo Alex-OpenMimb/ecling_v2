@@ -63,6 +63,11 @@ class User extends Authenticatable
         return $this->belongsToMany(Event::class);
     }
 
+    public function visits()
+    {
+        return $this->belongsToMany(Visit::class, 'visits_users', 'user_id', 'visit_id');
+    }
+
     public function serviceOrders()
     {
         return $this->belongsToMany( ServiceOrder::class );

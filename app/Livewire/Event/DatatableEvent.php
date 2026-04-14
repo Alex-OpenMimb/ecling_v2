@@ -3,7 +3,6 @@
 namespace App\Livewire\Event;
 
 use App\Helper\GeneralHelper;
-use App\Models\ClientsEquipments;
 use App\Models\ClientsEquipmentsCorrective;
 use App\Models\CorrectiveService;
 use App\Models\Event;
@@ -37,8 +36,6 @@ class DatatableEvent extends Component
     public function render()
     {
         $events = $this->get_events()
-         //      ->get();
-       //dd( $events );
             ->orderBy('events.date')
             ->orderBy('events.start_hour')
             ->simplePaginate($this->amount);
@@ -48,8 +45,18 @@ class DatatableEvent extends Component
 
     protected function get_events()
     {
+        $searchUsers = $this->search_users ?? [];
+        if ($searchUsers === []) {
+            $searchUsers = auth()->check() ? [auth()->id()] : DB::table('users')->pluck('id')->all();
+        }
+
         $queries = trim($this->query);
-         $query_event = Event::select(
+
+        $visitFirst = DB::table('visits')
+            ->select('event_id', DB::raw('MIN(id) as id'))
+            ->groupBy('event_id');
+
+        $query_event = Event::select(
             'events.id',
             'events.day',
             'events.date',
@@ -63,11 +70,22 @@ class DatatableEvent extends Component
             'events.service_order',
             'events.user_id',
             'events.closed',
+            'visits.id as visit_id',
+            'visits.client_name as visit_client_name',
+            'visits.headquarter_name as visit_headquarter_name',
+            'visits.observations as visit_observations',
+            'visits.report as visit_report',
+            'visits.status as visit_status',
+            'visits.client_id as visit_client_id',
+            'visits.headquarter_id as visit_headquarter_id',
+            'visits.visit_reason_id as visit_reason_id',
         )->leftJoin('corrective_services', 'events.id', '=', 'corrective_services.event_id')
             ->leftJoin('clients_equipments_correctives', 'corrective_services.id', '=', 'clients_equipments_correctives.corrective_service_id')
             ->leftJoin('schedules_has_events', 'events.id', '=', 'schedules_has_events.event_id')
             ->leftJoin('schedules', 'schedules_has_events.schedule_id', '=', 'schedules.id')
             ->leftJoin('schedules_has_service_orders', 'schedules.id', '=', 'schedules_has_service_orders.schedule_id')
+            ->leftJoinSub($visitFirst, 'visit_first', 'events.id', '=', 'visit_first.event_id')
+            ->leftJoin('visits', 'visits.id', '=', 'visit_first.id')
             ->groupBy(
                 'events.id',
                 'events.day',
@@ -82,32 +100,60 @@ class DatatableEvent extends Component
                 'events.service_order',
                 'events.user_id',
                 'events.closed',
+                'visits.id',
+                'visits.client_name',
+                'visits.headquarter_name',
+                'visits.observations',
+                'visits.report',
+                'visits.status',
+                'visits.client_id',
+                'visits.headquarter_id',
+                'visits.visit_reason_id',
             );
 
-        return ClientsEquipments::leftJoinSub($query_event, 'events', function (JoinClause $join) {
-            $join->on('clients_has_equipments.id', '=', 'events.cl_eq_schedule')
-                ->orOn('clients_has_equipments.id', '=', 'events.cl_eq_corrective');
-        })->leftJoin('clients', function (JoinClause $join) {
-            $join->on('clients_has_equipments.client_id', '=', 'clients.id');
-
-        })->leftJoin('service_orders', function (JoinClause $join) {
+        return DB::query()
+            ->fromSub($query_event, 'events')
+            ->leftJoin('clients_has_equipments', function (JoinClause $join) {
+                $join->on('clients_has_equipments.id', '=', 'events.cl_eq_schedule')
+                    ->orOn('clients_has_equipments.id', '=', 'events.cl_eq_corrective')
+                    ->orOn(function (JoinClause $join) {
+                        $join->whereNotNull('events.visit_client_id')
+                            ->whereColumn('clients_has_equipments.client_id', 'events.visit_client_id');
+                    });
+            })
+            ->where(function ($q) {
+                $q->whereNull('clients_has_equipments.id')
+                    ->orWhereNull('clients_has_equipments.deleted_at');
+            })
+            ->leftJoin('clients', function (JoinClause $join) {
+                $join->on('clients_has_equipments.client_id', '=', 'clients.id')
+                    ->orOn('clients.id', '=', 'events.visit_client_id');
+            })->leftJoin('service_orders', function (JoinClause $join) {
             $join->on('events.corrective_order_id', '=', 'service_orders.id')
                 ->orOn('events.schedule_order_id', '=', 'service_orders.id');
-        })->leftJoin('events_has_users','events.id','events_has_users.event_id')
-            ->where('events.closed',false)
-            ->where(function ($query){
-                $query->whereIn('events.user_id',  $this->search_users)
-                    ->orwhereIn('events_has_users.user_id', $this->search_users);
+        })->leftJoin('events_has_users', 'events.id', '=', 'events_has_users.event_id')
+            ->leftJoin('visits_users', 'events.visit_id', '=', 'visits_users.visit_id')
+            ->leftJoin('users as visit_assigned_user', 'visit_assigned_user.id', '=', 'visits_users.user_id')
+            ->where('events.closed', false)
+            ->where(function ($query) use ($searchUsers) {
+                $query->whereIn('events.user_id', $searchUsers)
+                    ->orWhereIn('events_has_users.user_id', $searchUsers)
+                    ->orWhereIn('visits_users.user_id', $searchUsers);
             })->where(function ($query) use ($queries) {
                 $query->where('events.activity', 'like', '%' . $queries . '%')
                     ->orWhere('events.date', 'like', '%' . $queries . '%')
                     ->orWhere('events.day', 'like', '%' . $queries . '%')
                     ->orWhere('clients.name', 'like', '%' . $queries . '%')
-                    ->orWhere('service_orders.serial', 'like', '%' . $queries . '%');
+                    ->orWhere('service_orders.serial', 'like', '%' . $queries . '%')
+                    ->orWhere('events.visit_client_name', 'like', '%' . $queries . '%')
+                    ->orWhere('events.visit_headquarter_name', 'like', '%' . $queries . '%')
+                    ->orWhere('events.visit_observations', 'like', '%' . $queries . '%')
+                    ->orWhere('visit_assigned_user.name', 'like', '%' . $queries . '%');
             })->distinct()
             ->select(
-                'clients_has_equipments.client_id',
+                DB::raw('COALESCE(clients_has_equipments.client_id, events.visit_client_id) as client_id'),
                 'events.id',
+                'events.user_id',
                 'events.day',
                 'events.date',
                 'events.start_hour',
@@ -115,10 +161,39 @@ class DatatableEvent extends Component
                 'clients.name as client_name',
                 'events.activity',
                 'events.service_order',
-
-                DB::raw("GROUP_CONCAT(DISTINCT IF(service_orders.status = 'Abierta', service_orders.serial, NULL) SEPARATOR ', ') as serial")
+                'events.visit_id',
+                'events.visit_client_name',
+                'events.visit_headquarter_name',
+                'events.visit_observations',
+                'events.visit_report',
+                'events.visit_status',
+                'events.visit_client_id',
+                'events.visit_headquarter_id',
+                'events.visit_reason_id',
+                DB::raw("GROUP_CONCAT(DISTINCT IF(service_orders.status = 'Abierta', service_orders.serial, NULL) SEPARATOR ', ') as serial"),
+                DB::raw('GROUP_CONCAT(DISTINCT visit_assigned_user.name ORDER BY visit_assigned_user.name SEPARATOR \', \') as visit_users_names')
             )
-            ->groupBy( 'clients_has_equipments.client_id', 'events.id','events.day','events.date' ,'events.start_hour','events.end_hour','clients.name', 'events.activity', 'events.service_order');
+            ->groupBy(
+                DB::raw('COALESCE(clients_has_equipments.client_id, events.visit_client_id)'),
+                'events.id',
+                'events.user_id',
+                'events.day',
+                'events.date',
+                'events.start_hour',
+                'events.end_hour',
+                'clients.name',
+                'events.activity',
+                'events.service_order',
+                'events.visit_id',
+                'events.visit_client_name',
+                'events.visit_headquarter_name',
+                'events.visit_observations',
+                'events.visit_report',
+                'events.visit_status',
+                'events.visit_client_id',
+                'events.visit_headquarter_id',
+                'events.visit_reason_id',
+            );
 
     }
 

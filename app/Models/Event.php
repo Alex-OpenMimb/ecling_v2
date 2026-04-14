@@ -26,6 +26,12 @@ class Event extends Model
 
     //Relationships
 
+
+    public function visits()
+    {
+        return $this->hasMany(Visit::class);
+    }
+
     public function users()
     {
         return $this->belongsToMany(User::class);

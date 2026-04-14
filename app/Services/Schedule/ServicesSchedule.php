@@ -26,14 +26,17 @@ class ServicesSchedule
             $nex_date = $now->copy()->addDays($frequency)->format('Y-m-d');
             $days = $last_date->diffInDays( $nex_date );
             $status = self::handel_status( $days );
-            \App\Models\Schedule::create([
+            \App\Models\Schedule::updateOrCreate(
+                [
+                    'client_has_equipment_id' => $id,
+                ],
+                [
                 'last_date' => $last_date,
                 'next_date' => $nex_date,
                 'days' => $days,
                 'frequency' => $frequency,
                 'status' => $status,
                 'preventive_routine_id' => $routine->id,
-                'client_has_equipment_id' => $id,
                 'equipment_id_flag' => $equipment_id,
             ]);
 

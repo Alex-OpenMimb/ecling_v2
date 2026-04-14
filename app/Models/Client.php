@@ -22,15 +22,25 @@ class Client extends Model
     ];
 
     //Relationships
+
+    public function visits()
+    {
+        return $this->hasMany(Visit::class);
+    }
     public function headquarters()
     {
         return $this->hasMany(Headquarter::class);
     }
 
+    public function quotation()
+    {
+        return $this->hasMany(Quotation::class);
+    }
+
 
     public function equipments()
     {
-        return $this->belongsToMany(  Equipment::class );
+        return $this->belongsToMany(  Equipment::class, 'ClientsEquipments', 'client_id', 'equipment_id' );
     }
 
     public function generalReports()

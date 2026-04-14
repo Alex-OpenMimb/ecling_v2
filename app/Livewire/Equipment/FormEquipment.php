@@ -26,7 +26,6 @@ class FormEquipment extends Component
 
     public function mount(Equipment $equipment)
     {
-        Log::info('TEST EQUIPOS - 1',['data'=> $equipment]);
         if( $equipment->id ){
             $this->fill(
                 $equipment->only('id','description','name','status',
@@ -142,7 +141,8 @@ class FormEquipment extends Component
                        ->where('equipment_class_id', $this->equipment_class_id)
                        ->where('brand_id',$this->brand_id)
                        ->where('volt_id',$this->volt_id)
-                       ->where('ampere_id',$this->ampere_id);
+                       ->where('ampere_id',$this->ampere_id)
+                       ->where('name',$this->name);
                })->ignore($this->id,'id'),
            ],
 

@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Schedule;
 
+use App\Models\PreventiveRoutineEquipment;
 use App\Models\Schedule;
 use App\Services\Schedule\ServicesSchedule;
 use App\Services\Schedules\ScheduleService;
@@ -32,7 +33,15 @@ class FormFrequency extends ModalComponent
     public function update()
     {
             $this->validate();
+
             //Updated the frequency when select the record in the table.
+         $preventive_routine =  PreventiveRoutineEquipment::where('equipment_id', $this->schedule->client_has_equipment_id)
+            ->first();
+         if(  $preventive_routine ){
+             $preventive_routine->custom_frequency = $this->frequency;
+             $preventive_routine->save();
+         }
+
             $this->update_by_id( $this->schedule );
 
             toastr()->success('Frecuencia actualizada con éxito!', 'Felicitaciones');

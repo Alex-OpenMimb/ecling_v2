@@ -102,7 +102,17 @@ class CreateEquipment
             'asset_assignment' => $assetAssignment,
         ] = $data;
 
-        return Equipment::create([
+        return Equipment::firstOrCreate(
+            [
+                'name' => $name,
+                'slug' => Str::slug($name, '-'),
+                'equipment_model_id' => $equipmentModel->id,
+                'equipment_class_id' => $equipmentClassId,
+                'brand_id' => $brand->id,
+                'volt_id' => $volt->id,
+                'ampere_id' => $ampere->id,
+            ]
+            ,[
             'name' => $name,
             'slug' => Str::slug($name, '-'),
             'equipment_model_id' => $equipmentModel->id,

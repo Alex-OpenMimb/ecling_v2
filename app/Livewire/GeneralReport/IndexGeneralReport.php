@@ -2,6 +2,7 @@
 
 namespace App\Livewire\GeneralReport;
 
+use App\Models\GeneralReport;
 use App\Models\ServiceOrder;
 use App\Services\GeneralReport\GeneralReportData;
 use App\Services\ServiceOrder\DataServiceOrder;
@@ -14,6 +15,8 @@ class IndexGeneralReport  extends Component
 
     public $service_order_serial,$service_order_id, $url_back, $client_name, $headquarter_name;
 
+    public ?int $client_id = null;
+
     public function mount(  $service_order_id )
     {
         $service_order_id       = Crypt::decryptString($service_order_id);
@@ -22,7 +25,7 @@ class IndexGeneralReport  extends Component
         $this->service_order_serial = DataServiceOrder::get_service_order( $this->service_order_id );
         $this->client_name = GeneralReportData::get_client_name( $this->service_order_id  );
         $this->headquarter_name = GeneralReportData::get_headquarter_name( $this->service_order_id  );
-
+        $this->client_id = GeneralReport::where('service_order_id', $this->service_order_id)->value('client_id');
 
     }
 

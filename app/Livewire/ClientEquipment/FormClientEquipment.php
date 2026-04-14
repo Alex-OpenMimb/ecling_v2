@@ -4,22 +4,25 @@ namespace App\Livewire\ClientEquipment;
 
 use App\Actions\ClientEquipment\CreateClientEquipment;
 use App\Actions\Equipment\CreateEquipment;
+use App\Actions\Helpers\StorePhoto;
 use App\Actions\PreventiveRoutineEquipment\CreatePreventiveRoutineEquipment;
-use App\Helper\GeneralHelper;
-use App\Helper\HandelSerial;
+use App\Models\Ampere;
+use App\Models\Brand;
 use App\Models\Client;
 use App\Models\ClientsEquipments;
 use App\Models\Equipment;
 use App\Models\EquipmentClass;
+use App\Models\EquipmentModel;
 use App\Models\Headquarter;
 use App\Models\Location;
+use App\Models\Photo;
 use App\Models\PreventiveRoutine;
+use App\Models\PreventiveRoutineEquipment;
+use App\Models\SchedulesServiceOrder;
 use App\Models\TitlePhoto;
-use App\Services\Equipment\DataEquipment;
-use App\Services\Equipment\EquipmentService;
-use App\Services\PreventiveRoutine\ServicePreventiveRoutine;
-use App\Services\Schedule\ServicesSchedule;
-use Illuminate\Support\Str;
+use App\Models\Volt;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use Livewire\Attributes\Locked;
 use Livewire\Component;
@@ -39,6 +42,7 @@ class FormClientEquipment   extends  Component
 
         // Propiedades para crear equipo
         public $name;
+        public $quantity = 1;
         public $brand;
         public $location;
         public $voltage;
@@ -57,15 +61,131 @@ class FormClientEquipment   extends  Component
         public $preventive_routine_id;
         public $custom_frequency;
         public $preventive_routine_lists = [];
+        public $brand_options = [];
+        public $model_options = [];
+        public $voltage_options = [];
+        public $amperage_options = [];
+        public $location_options = [];
+        public $equipments_list = [];
+        public $selected_equipment_id = null;
+        public $readonly = false;
+        public $disabled = false;
+        public $disabled_preventive = false;
 
         public function mount(Headquarter  $headquarter, Client $client, ClientsEquipments $client_equipment )
         {
+
+            if( $client_equipment->id  ){
+                $this->setCreatedData( $client_equipment );
+                $this->validatePreventiveService( $client_equipment );
+            }
             $this->headquarter = $headquarter;
             $this->client = $client;
             $this->client_equipment = $client_equipment;
             $this->get_equipment_class();
             $this->get_title_photos();
             $this->get_preventive_routines();
+            $this->load_form_select_options();
+            $this->load_equipments();
+        }
+
+
+        private function setCreatedData( $client_equipment )
+        {
+            $this->readonly = true;
+            $this->disabled = true;
+            $this->id = $client_equipment->id;
+            $this->equipment_class_id = $client_equipment->equipment->equipment_class_id;
+            $this->name = $client_equipment->equipment->name;
+            $this->brand = $client_equipment->equipment->brand->name;
+            $this->model = $client_equipment->equipment->equipmentModel->model;
+            $this->voltage = $client_equipment->equipment->volts->volt_measurement;
+            $this->amperage = $client_equipment->equipment->amperes->amperage_measurement;
+            $this->location = $client_equipment->location->name;
+            if( $client_equipment->schedule_assigned  ){
+                $this->setAssignedPreventiveRoutine();
+            }
+
+
+        }
+
+        public function updatedPreventiveRoutineId($value): void
+        {
+            if (empty($value)) {
+                $this->custom_frequency = null;
+                return;
+            }
+            $routine = PreventiveRoutine::find($value);
+            if ($routine && $routine->frequency !== null) {
+                $this->custom_frequency = (string) $routine->frequency;
+            }
+        }
+
+        private function setAssignedPreventiveRoutine()
+        {
+            $preventive_routine =  PreventiveRoutineEquipment::join(
+                'preventive_routines',
+                'preventive_routines_equipments.preventive_routine_id',
+                '=',
+                'preventive_routines.id'
+            )->where('preventive_routines_equipments.equipment_id',$this->id)
+                ->select('preventive_routines_equipments.custom_frequency','preventive_routines.name','preventive_routines.id')
+                ->first();
+            $this->preventive_routine_id = $preventive_routine->id;
+            $this->custom_frequency = $preventive_routine->custom_frequency;
+        }
+
+        protected function load_equipments(): void
+        {
+            $this->equipments_list = Equipment::select(
+                'equipments.id',
+                'equipments.name',
+                'brands.name as brand_name',
+                'equipment_models.model as model_name',
+                'volts.volt_measurement as voltage',
+                'amperes.amperage_measurement as amperage'
+            )
+                ->join('brands', 'equipments.brand_id', '=', 'brands.id')
+                ->join('equipment_models', 'equipments.equipment_model_id', '=', 'equipment_models.id')
+                ->join('volts', 'equipments.volt_id', '=', 'volts.id')
+                ->leftJoin('amperes', 'equipments.ampere_id', '=', 'amperes.id')
+                ->where('equipments.status', true)
+                ->orderBy('equipments.name')
+                ->get();
+        }
+
+        public function updated()
+        {
+            $this->load_equipments();
+        }
+        public function updatedSelectedEquipmentId($value): void
+        {
+            if (empty($value)) {
+                return;
+            }
+
+            $equipment = Equipment::with(['brand', 'equipmentModel', 'volts', 'amperes'])
+                ->where('id', $value)
+                ->first();
+
+            if ($equipment) {
+                $this->name = $equipment->name;
+                $this->brand = $equipment->brand ? $equipment->brand->name : '';
+                $this->model = $equipment->equipmentModel ? $equipment->equipmentModel->model : '';
+                $this->voltage = $equipment->volts ?  ( string ) $equipment->volts->volt_measurement : null;
+                $this->amperage = $equipment->amperes ? ( string ) $equipment->amperes->amperage_measurement : null;
+                $this->equipment_class_id = $equipment->equipment_class_id;
+            }
+            $this->load_equipments();
+        }
+
+        protected function load_form_select_options(): void
+        {
+            $this->brand_options = Brand::select('id', 'name')->orderBy('name')->get();
+            $this->model_options = EquipmentModel::select('id', 'model')->orderBy('model')->get()->map(fn ($m) => ['name' => $m->model])->values()->all();
+            $this->voltage_options = Volt::select('id', 'volt_measurement')->orderBy('volt_measurement')->get()->map(fn ($v) => ['name' => (string) $v->volt_measurement])->values()->all();
+            $this->amperage_options = Ampere::select('id', 'amperage_measurement')->orderBy('amperage_measurement')->get()->map(fn ($a) => ['name' => (string) $a->amperage_measurement])->values()->all();
+            $this->location_options = Location::select('id', 'name')->orderBy('name')->get();
         }
 
         protected function get_equipment_class()
@@ -98,57 +218,137 @@ class FormClientEquipment   extends  Component
         public function updateOrStore( )
         {
             $this->validate();
+            // Crear la cantidad de equipos para el cliente
+            $quantity = (int) $this->quantity;
+          if( !$this->id ){
+              // Crear el Equipment primero
+              $equipmentData = [
+                  'name' => $this->name,
+                  'brand' => $this->brand,
+                  'location' => $this->location,
+                  'voltage' => $this->voltage,
+                  'amperage' => $this->amperage,
+                  'model' => $this->model,
+                  'equipment_class_id' => $this->equipment_class_id,
+                  'asset_assignment' => true,
+              ];
 
-            // Crear el Equipment primero
-            $equipmentData = [
-                'name' => $this->name,
-                'brand' => $this->brand,
-                'location' => $this->location,
-                'voltage' => $this->voltage,
-                'amperage' => $this->amperage,
-                'model' => $this->model,
-                'equipment_class_id' => $this->equipment_class_id,
-                'asset_assignment' => true,
-            ];
-
-            $equipmentResult = CreateEquipment::run($equipmentData);
-            $equipment = $equipmentResult['equipment'];
-
-            // Crear el registro en clients_has_equipments
-            $clientEquipmentData = [
-                'observations' => $this->observations,
-                'client_id' => $this->client->id,
-                'headquarter_id' => $this->headquarter->id,
-                'location' => $this->location,
-                'equipment_class_id' => $this->equipment_class_id,
-                'plate_photo' => $this->plate_photo,
-                'perimeter_photo' => $this->perimeter_photo,
-                'photo1_title_photo_id' => $this->photo1_title_photo_id,
-                'photo2_title_photo_id' => $this->photo2_title_photo_id,
-            ];
-
-            $result = CreateClientEquipment::run($equipment, $clientEquipmentData);
-
-            $clientEquipment = $result['client_equipment'];
-
-            if( $this->preventive_routine_id  ){
-                CreatePreventiveRoutineEquipment::run([
-                    'equipment_client' => $clientEquipment,
-                    'routine_id' => (int) $this->preventive_routine_id,
-                    'custom_frequency' => $this->custom_frequency !== '' && $this->custom_frequency !== null
-                        ? (int) $this->custom_frequency
-                        : null,
-                ]);
-
-                $this->markPreventiveRoutineAssigned($equipment, $clientEquipment);
-            }
+              $equipmentResult = CreateEquipment::run($equipmentData);
+              $equipment = $equipmentResult['equipment'];
 
 
-            toastr()->success('El equipo se ha creado con éxito!', 'Felicitaciones');
+              for ($i = 0; $i < $quantity; $i++) {
+                  // Crear el registro en clients_has_equipments
+                  // Solo el primer equipo tendrá las fotos (los UploadedFile no se pueden reutilizar)
+                  $clientEquipmentData = [
+                      'observations' => $this->observations,
+                      'client_id' => $this->client->id,
+                      'headquarter_id' => $this->headquarter->id,
+                      'location' => $this->location,
+                      'equipment_class_id' => $this->equipment_class_id,
+                      'plate_photo' =>  $this->plate_photo,
+                      'perimeter_photo' => $this->perimeter_photo,
+                      'photo1_title_photo_id' => $this->photo1_title_photo_id,
+                      'photo2_title_photo_id' =>  $this->photo2_title_photo_id,
+                  ];
+
+                  $result = CreateClientEquipment::run($equipment, $clientEquipmentData);
+                  $clientEquipment = $result['client_equipment'];
+
+                  if ($this->preventive_routine_id) {
+                     $this->setPreventiveService( $equipment,$clientEquipment );
+                  }
+              }
+          } else {
+              $location = Location::firstOrCreate(
+                  ['name' => $this->location],
+                  ['status' => true]
+              );
+              if ($this->preventive_routine_id) {
+                  $this->setPreventiveService($this->client_equipment->equipment, $this->client_equipment);
+              }
+              $this->client_equipment->location_id = $location->id;
+              $this->client_equipment->save();
+
+              // Guardar fotos si se subieron en la edición (reemplazar si ya existe)
+              if ($this->plate_photo instanceof UploadedFile) {
+                  $this->replacePhotoByBasePath($this->client_equipment, 'image/client_equipment/plate_photo');
+                  $titlePhotoId = !empty($this->photo1_title_photo_id) ? (int) $this->photo1_title_photo_id : null;
+                  StorePhoto::run([
+                      'file' => $this->plate_photo,
+                      'title_photo_id' => $titlePhotoId,
+                      'model' => $this->client_equipment,
+                      'base_path' => 'image/client_equipment/plate_photo',
+                  ]);
+              }
+              if ($this->perimeter_photo instanceof UploadedFile) {
+                  $this->replacePhotoByBasePath($this->client_equipment, 'image/client_equipment/perimeter_photo');
+                  $titlePhotoId = !empty($this->photo2_title_photo_id) ? (int) $this->photo2_title_photo_id : null;
+                  StorePhoto::run([
+                      'file' => $this->perimeter_photo,
+                      'title_photo_id' => $titlePhotoId,
+                      'model' => $this->client_equipment,
+                      'base_path' => 'image/client_equipment/perimeter_photo',
+                  ]);
+              }
+          }
+
+            $message = $quantity === 1
+                ? 'El equipo se ha creado/actualizado con éxito!'
+                : "Se han creado {$quantity} equipos con éxito!";
+
+            toastr()->success($message, 'Felicitaciones');
             return redirect()->route('admin.clients-equipments', [
                 'client' => $this->client->slug,
                 'headquarter' => $this->headquarter->slug
             ]);
+        }
+
+
+        private function setPreventiveService( $equipment,$clientEquipment )
+        {
+
+            CreatePreventiveRoutineEquipment::run([
+                'equipment_client' => $clientEquipment,
+                'routine_id' => (int) $this->preventive_routine_id,
+                'custom_frequency' => $this->custom_frequency !== '' && $this->custom_frequency !== null
+                    ? (int) $this->custom_frequency
+                    : null,
+            ]);
+
+            $this->markPreventiveRoutineAssigned($equipment, $clientEquipment);
+        }
+
+
+        private function validatePreventiveService( $client_equipment )
+        {
+            $schedules_service_order =   SchedulesServiceOrder::join('service_orders', 'service_orders.id', '=', 'schedules_has_service_orders.service_order_id')
+                ->where('schedules_has_service_orders.client_has_equipment_id', $client_equipment->id)
+                ->select('service_orders.*')
+                ->first();
+            if( $schedules_service_order &&  $schedules_service_order->status == 'Abierta'){
+                $this->disabledPreventiveService( $client_equipment );
+            }
+        }
+        private function disabledPreventiveService( $client_equipment )
+        {
+            if( $client_equipment->schedule_assigned){
+               $this->disabled_preventive = true;
+            }
+        }
+        protected function replacePhotoByBasePath(ClientsEquipments $clientEquipment, string $basePath): void
+        {
+            $existing = Photo::where('model_type', ClientsEquipments::class)
+                ->where('model_id', $clientEquipment->id)
+                ->where('path', 'like', $basePath . '/%')
+                ->get();
+
+            foreach ($existing as $photo) {
+                if (Storage::disk('public')->exists($photo->path)) {
+                    Storage::disk('public')->delete($photo->path);
+                }
+                $photo->delete();
+            }
         }
 
         protected function markPreventiveRoutineAssigned(Equipment $equipment, ClientsEquipments $clientEquipment): void
@@ -163,7 +363,8 @@ class FormClientEquipment   extends  Component
         public function rules()
         {
             return [
-                'name' => 'required|string|min:3',
+                'name' => ['required', 'string', 'min:3'],
+                'quantity' => 'required|integer|min:1',
                 'brand' => 'required|string',
                 'location' => 'required|string',
                 'voltage' => 'required|numeric|min:0',
@@ -181,6 +382,9 @@ class FormClientEquipment   extends  Component
                 'name.required' => 'El nombre es requerido.',
                 'name.string' => 'El nombre debe ser texto.',
                 'name.min' => 'El nombre debe tener al menos 3 caracteres.',
+                'quantity.required' => 'La cantidad es requerida.',
+                'quantity.integer' => 'La cantidad debe ser un número entero.',
+                'quantity.min' => 'La cantidad debe ser mayor o igual a 1.',
                 'brand.required' => 'La marca es requerida.',
                 'brand.string' => 'La marca debe ser texto.',
                 'location.required' => 'La ubicación es requerida.',
