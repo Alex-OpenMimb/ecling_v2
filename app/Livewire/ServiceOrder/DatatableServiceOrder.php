@@ -19,9 +19,12 @@ class DatatableServiceOrder  extends Component
     public $heads, $counter = 1, $amount =10,$query,$search_users;
     public $filter_client = '', $filter_equipment = '';
 
-    public function mount()
+    public ?int $clientId = null;
+
+    public function mount(?int $clientId = null)
     {
-        $this->heads = ['Items','Creador','Serial*','Equipo','Cliente*','Actividad*','Observaciones','Estado*','Acciones'];
+        $this->clientId = $clientId;
+        $this->heads = ['Items','Creador','Serial*','Equipo','Cliente*','Sucursal*','Actividad*','Observaciones','Estado*','Acciones'];
         $this->search_users =  GeneralHelper::set_auth_users();
 
     }
@@ -34,7 +37,7 @@ class DatatableServiceOrder  extends Component
           //  ->get();
             ->orderBy('service_order.serial','desc')
             ->simplePaginate($this->amount);
-        
+
         return view('livewire.serviceOrder.datatable',[
             'orders'=> $service_order
         ]);
@@ -77,6 +80,7 @@ class DatatableServiceOrder  extends Component
             $join->on('clients_has_equipments.client_id','=','clients.id');
 
         })->join('equipments','clients_has_equipments.equipment_id','equipments.id')
+            ->join('headquarters', 'clients_has_equipments.headquarter_id', '=', 'headquarters.id')
             ->join('users','service_order.user_id','users.id')
             ->leftJoin('service_orders_has_users','service_order.id','=','service_orders_has_users.service_order_id')
             ->where(function ($query){
@@ -86,7 +90,10 @@ class DatatableServiceOrder  extends Component
                 $query->where('service_order.serial','like','%'. $queries. '%')
                     ->orWhere('clients.name','like','%'. $queries. '%')
                     ->orWhere('service_order.activity','like','%'. $queries. '%')
+                    ->orWhere('headquarters.name','like','%'. $queries. '%')
                     ->orWhere('service_order.status','like','%'. $queries. '%');
+            })->when($this->clientId, function ($query) {
+                $query->where('clients.id', $this->clientId);
             })->when($this->filter_client, function ($query) {
                 $filter_client = trim($this->filter_client);
                 if ($filter_client) {
@@ -104,6 +111,7 @@ class DatatableServiceOrder  extends Component
                 'equipments.name as equipments_name',
                 'service_order.status',
                 'clients.name',
+                'headquarters.name as headquarter_name',
                 'service_order.observations',
                 'service_order.activity',
                  'users.name as user_name');

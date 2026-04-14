@@ -26,6 +26,7 @@ use App\Livewire\PreventiveRoutine\IndexPreventiveRoutine;
 use App\Livewire\Schedule\IndexSchedule;
 use App\Livewire\ServiceOrder\FormServiceOrder;
 use App\Livewire\ServiceOrder\IndexServiceOrder;
+use App\Livewire\ServiceOrder\IndexServiceOrderClient;
 use App\Livewire\Store\IndexStore;
 use App\Livewire\EquipmentClass\Form as EquipmentClassForm;
 use App\Livewire\EquipmentClass\Index as EquipmentClassIndex;
@@ -106,6 +107,7 @@ Route::middleware(['auth'])->prefix('admin')->group( function() {
     Route::get('quotations/{quotation}', QuotationShow::class)->middleware('can:admin.quotations')->name('admin.quotations.show');
 
     Route::get('services-order',IndexServiceOrder::class)->middleware('can:admin.service-order')->name('admin.service-order');
+    Route::get('services-order/client/{clientId}', IndexServiceOrderClient::class)->whereNumber('clientId')->middleware('can:admin.service-order')->name('admin.service-order.client');
     Route::get('services-order/create/schedule',FormServiceOrder::class)->middleware('can:admin.service-order.schedule.create')->name('admin.service-order.schedule.create');
     Route::get('services-order/create/corrective',FormServiceOrder::class)->middleware('can:admin.service-order.corrective.create')->name('admin.service-order.corrective.create');
 

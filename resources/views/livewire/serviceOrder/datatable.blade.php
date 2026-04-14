@@ -4,6 +4,7 @@
         <div>
             <x-forms.search property="query" method="search" id="clients_search"></x-forms.search>
         </div>
+        @if(!$clientId)
         <div class="pr-0 md:pr-4 mb-4 md:mb-0">
             <input
                 type="text"
@@ -13,6 +14,7 @@
                 placeholder="Filtrar por cliente"
                 class="mb-2 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
         </div>
+        @endif
         <div class="pr-0 md:pr-4 mb-4 md:mb-0">
             <input
                 type="text"
@@ -51,6 +53,11 @@
                     <x-table.row> {{$order->serial}} </x-table.row>
                     <x-table.row>  <button onclick="Livewire.dispatch('openModal', { component: 'client-equipment.show-client-equipment',arguments:{client_equipment_id: {{$order->client_equipment_id}}  } })" > {{$order->equipments_name}} </button>  </x-table.row>
                     <x-table.row> <div class="truncate-13" title="{{$order->name}}"> {{$order->name}} </div> </x-table.row>
+                    <x-table.row>
+                        <div class="truncate-13" title="{{ $order->headquarter_name ?? '' }}">
+                            {{ $order->headquarter_name ?? '—' }}
+                        </div>
+                    </x-table.row>
 
                     <x-table.row> {{$order->activity}} </x-table.row>
                     <x-table.row> <div class="truncate-20" > @if( $order->observations ) {{$order->observations}} @else Sin Observaciones  @endif </div> </x-table.row>
