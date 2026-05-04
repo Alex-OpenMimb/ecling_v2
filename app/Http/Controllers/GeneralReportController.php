@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Helper\GeneralHelper;
 use App\Jobs\SendEmail;
+use App\Jobs\SendGeneralReportsZipEmail;
 use App\Mail\GeneralReportMail;
 use App\Models\Client;
 use App\Models\GeneralReport;
@@ -25,7 +26,9 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Bus;
+use Illuminate\Support\Str;
 use Throwable;
+use ZipArchive;
 use Livewire\Livewire;
 
 class GeneralReportController extends Controller
@@ -75,6 +78,84 @@ class GeneralReportController extends Controller
        })->dispatch();
 
    }
+
+    /**
+     * Genera un PDF por cada reporte, los comprime en un ZIP y encola el envío por correo
+     * siguiendo la misma cadena que {@see send_pdf_document}.
+     *
+     * @param  list<int>  $generalReportIds  IDs de `general_reports`; puede ser un solo elemento `[ $id ]`.
+     */
+    public function send_pdf_documents_zip(array $generalReportIds): void
+    {
+        $ids = array_values(array_unique(array_map('intval', array_filter($generalReportIds))));
+        if ($ids === []) {
+            throw new \InvalidArgumentException('Debe indicar al menos un id de reporte general.');
+        }
+
+        $this->general_report = GeneralReport::findOrFail($ids[0]);
+        $batchId = (string) Str::uuid();
+        $relativeDir = 'document/massive/'.$batchId;
+
+        if (! Storage::exists($relativeDir)) {
+            Storage::makeDirectory($relativeDir);
+        }
+
+        foreach ($ids as $generalReportId) {
+            $pdf = $this->create_pdf($generalReportId);
+            Storage::put($relativeDir.'/reporte_'.$generalReportId.'.pdf', $pdf->output());
+        }
+
+        $zipRelativePath = $relativeDir.'/reportes.zip';
+        $this->createZipFromPdfFiles(Storage::path($relativeDir), Storage::path($zipRelativePath));
+
+        Bus::chain([
+            new SendGeneralReportsZipEmail(
+                $this->general_report,
+                $zipRelativePath,
+                $ids
+            ),
+            function () use ($ids, $relativeDir) {
+                foreach ($ids as $id) {
+                    $report = GeneralReport::find($id);
+                    if ($report) {
+                        $report->sent = 'Entregado';
+                        $report->save();
+                    }
+                }
+                Storage::deleteDirectory($relativeDir);
+            },
+        ])->catch(function (Throwable $e) use ($relativeDir, $ids) {
+            Log::error('Error to send zip email: '.$e->getMessage());
+            foreach ($ids as $id) {
+                $report = GeneralReport::find($id);
+                if ($report) {
+                    $report->sent = 'Rechazado';
+                    $report->save();
+                }
+            }
+            Storage::deleteDirectory($relativeDir);
+        })->dispatch();
+    }
+
+    /**
+     * Crea un archivo ZIP con todos los PDF del directorio (excluye el propio .zip si existiera).
+     */
+    protected function createZipFromPdfFiles(string $absoluteDirectory, string $absoluteZipPath): void
+    {
+        $zip = new ZipArchive;
+        if ($zip->open($absoluteZipPath, ZipArchive::CREATE | ZipArchive::OVERWRITE) !== true) {
+            throw new \RuntimeException('No se pudo crear el archivo ZIP en: '.$absoluteZipPath);
+        }
+
+        foreach (File::files($absoluteDirectory) as $file) {
+            if (strtolower($file->getExtension()) !== 'pdf') {
+                continue;
+            }
+            $zip->addFile($file->getPathname(), $file->getFilename());
+        }
+
+        $zip->close();
+    }
 
     protected  function create_pdf( $general_report_id )
     {

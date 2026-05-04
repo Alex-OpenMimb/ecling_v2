@@ -32,6 +32,17 @@
                 <option value="100">100</option>
             </select>
         </div>
+        <div class="pr-0 md:pr-4 mb-4 md:mb-0 flex items-end">
+            <button
+                type="button"
+                wire:click="massiveSend"
+                wire:loading.attr="disabled"
+                class="mb-2 whitespace-nowrap bg-white border border-blue-500 text-blue-500 px-4 py-2.5 rounded-lg text-sm font-medium hover:bg-blue-500 hover:text-white transition duration-300 disabled:opacity-50"
+            >
+                <span wire:loading.remove wire:target="massiveSend">Envío masivo</span>
+                <span wire:loading wire:target="massiveSend">Envío masivo</span>
+            </button>
+        </div>
         <div  wire:loading >  <x-loader></x-loader> </div>
     </div>
     <table class="w-full relative" >
@@ -49,6 +60,21 @@
             @foreach($orders as $order)
                 <tr class="group" wire:key="{{ $order->id }}">
                     <x-table.row> {{$counter}} </x-table.row>
+                    <x-table.row>
+                        <div class="flex justify-center">
+                            <input
+                                type="checkbox"
+                                wire:key="so-select-{{ $order->id }}"
+                                class="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed"
+                                @if($order->status === 'Cerrada')
+                                    wire:model.live="selectedOrderIds"
+                                    value="{{ $order->id }}"
+                                @else
+                                    disabled
+                                @endif
+                            />
+                        </div>
+                    </x-table.row>
                     <x-table.row> {{$order->user_name}} </x-table.row>
                     <x-table.row> {{$order->serial}} </x-table.row>
                     <x-table.row>  <button onclick="Livewire.dispatch('openModal', { component: 'client-equipment.show-client-equipment',arguments:{client_equipment_id: {{$order->client_equipment_id}}  } })" > {{$order->equipments_name}} </button>  </x-table.row>
