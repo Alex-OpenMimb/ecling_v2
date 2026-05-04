@@ -7,9 +7,9 @@
          <div class="relative text-blue-500 font-bold" style="left: 520px;">ORDEN DE SERVICIO</div>
         <div class="row ">
             <div class="cell " style="width: 250px;">
-               <div>  <img src="{{ public_path('image/logo/logo_form.jpeg') }}" alt="Logo" class="image" style="color: white"> </div>
-                <div class="font-bold text-blue-400" style="font-size: 0.6rem">EQUIPOS PARA LA INDUSTRIA ALIMENTARIA</div>
-                <div class="font-bold  text-blue-400" style="font-size: 0.6rem"><span style="margin-left: 20px">Nit. 830.505632 - 4</span>  <span>  <img width="15" height="auto" src="{{ public_path('image/logo/blue-wapp.png') }}">  301 433 23 03</span> </div>
+               <div>  <img src="{{ public_path('image/logo/logo-ecling.jpeg') }}" alt="Logo" class="image" style="color: white"> </div>
+                <div class="font-bold text-blue-400" style="font-size: 0.6rem;display: none">EQUIPOS PARA LA INDUSTRIA ALIMENTARIA</div>
+                <div class="font-bold  text-blue-400" style="font-size: 0.6rem;display: none"><span style="margin-left: 20px">Nit. 830.505632 - 4</span>  <span>  <img width="15" height="auto" src="{{ public_path('image/logo/blue-wapp.png') }}">  301 433 23 03</span> </div>
             </div>
 
             <div class="cell   ">
@@ -79,7 +79,7 @@
         </div>
 
 
-        <div class="container" style="">
+        <div class="container" style="display: none">
             <div class="row text-blue-500 text-8rem">
                 <div class="cell border-t border-r" style="width: 284px">
                     <p class="m-l-5  font-bold">MATRIALES UTILIZADOS</p>
@@ -97,7 +97,7 @@
             </div>
         </div>
 
-        <div class="container">
+        <div class="container" style="display: none">
          @foreach($materials_spare_parts as $element  )
                 <div class="row text-blue-500 text-8rem">
 

@@ -5,9 +5,12 @@ namespace App\Livewire\ServiceOrder;
 use App\Helper\GeneralHelper;
 use App\Models\ClientEquipment;
 use App\Models\ClientsEquipments;
+use App\Http\Controllers\GeneralReportController;
+use App\Models\GeneralReport;
 use App\Models\ServiceOrder;
 use Illuminate\Database\Query\JoinClause;
 use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\Log;
 use Livewire\Attributes\On;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -21,10 +24,13 @@ class DatatableServiceOrder  extends Component
 
     public ?int $clientId = null;
 
+    /** @var list<int> */
+    public array $selectedOrderIds = [];
+
     public function mount(?int $clientId = null)
     {
         $this->clientId = $clientId;
-        $this->heads = ['Items','Creador','Serial*','Equipo','Cliente*','Sucursal*','Actividad*','Observaciones','Estado*','Acciones'];
+        $this->heads = ['Items','','Creador','Serial*','Equipo','Cliente*','Sucursal*','Actividad*','Observaciones','Estado*','Acciones'];
         $this->search_users =  GeneralHelper::set_auth_users();
 
     }
@@ -111,6 +117,7 @@ class DatatableServiceOrder  extends Component
                 'equipments.name as equipments_name',
                 'service_order.status',
                 'clients.name',
+                'headquarters.id as headquarter_id',
                 'headquarters.name as headquarter_name',
                 'service_order.observations',
                 'service_order.activity',
@@ -151,6 +158,77 @@ class DatatableServiceOrder  extends Component
         return  toastr()->error($message, 'Error');
     }
 
+    /**
+     * Al menos una orden seleccionada en el listado.
+     */
+    protected function validateAtLeastOneOrderSelected(): bool
+    {
+        return count(array_filter(array_map('intval', $this->selectedOrderIds))) > 0;
+    }
 
+    /**
+     * Todas las órdenes seleccionadas existen en el listado filtrado y comparten la misma sede (headquarter).
+     */
+    protected function validateSelectedOrdersSameHeadquarter(): bool
+    {
+        $ids = array_values(array_unique(array_map('intval', array_filter($this->selectedOrderIds))));
+        if ($ids === []) {
+            return false;
+        }
+
+        $rows = $this->get_service_order()
+            ->whereIn('service_order.id', $ids)
+            ->select(['service_order.id', 'headquarters.id as headquarter_id'])
+            ->get()
+            ->unique('id');
+
+        if ($rows->count() !== count($ids)) {
+            return false;
+        }
+
+        return $rows->pluck('headquarter_id')->unique()->count() === 1;
+    }
+
+    public function massiveSend(): void
+    {
+        if (! $this->validateAtLeastOneOrderSelected()) {
+            toastr()->error('Debe seleccionar al menos una orden de servicio.', 'Error');
+
+            return;
+        }
+
+        if (! $this->validateSelectedOrdersSameHeadquarter()) {
+            toastr()->error('Todas las órdenes seleccionadas deben pertenecer a la misma sede.', 'Error');
+
+            return;
+        }
+
+        $serviceOrderIds = array_values(array_unique(array_map('intval', array_filter($this->selectedOrderIds))));
+
+        $generalReports = GeneralReport::query()
+            ->whereIn('service_order_id', $serviceOrderIds)
+            ->orderBy('id')
+            ->get(['id', 'service_order_id', 'serial']);
+
+        $generalReportIds = $generalReports->pluck('id')->all();
+
+        if ($generalReportIds === []) {
+            toastr()->error('No hay reportes generales asociados a las órdenes seleccionadas.', 'Error');
+
+            return;
+        }
+
+        try {
+            app(GeneralReportController::class)->send_pdf_documents_zip($generalReportIds);
+        } catch (\Throwable $e) {
+            Log::error('Envío masivo reportes: '.$e->getMessage(), ['exception' => $e]);
+
+            toastr()->error('No se pudo procesar el envío masivo. Intente de nuevo o contacte soporte.', 'Error');
+
+            return;
+        }
+
+        toastr()->success('El envío masivo por correo (ZIP) quedó en cola.', 'Envío masivo');
+    }
 
 }
