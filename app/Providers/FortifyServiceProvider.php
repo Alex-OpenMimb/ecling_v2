@@ -47,17 +47,17 @@ class FortifyServiceProvider extends ServiceProvider
             if ($user &&
                 Hash::check($request->password, $user->password) &&
                 $user->status) {
-                $roleId    = $user->roles->first()->id;
-                if ($user->session_id && $user->session_id !== $sessionId && $roleId === 4 ) {
-                    throw ValidationException::withMessages([
-                        'email' => [trans('El usuario ya tiene una sesión activa en otro dispositivo.')],
-                    ]);
-                }
-                if( $roleId === 4 ){
-                    $user->session_id =  $sessionId;
-                    $user->last_session =  Carbon::now();
-                    $user->save();
-                }
+//                $roleId    = $user->roles->first()->id;
+//                if ($user->session_id && $user->session_id !== $sessionId && $roleId === 4 ) {
+//                    throw ValidationException::withMessages([
+//                        'email' => [trans('El usuario ya tiene una sesión activa en otro dispositivo.')],
+//                    ]);
+//                }
+//                if( $roleId === 4 ){
+//                    $user->session_id =  $sessionId;
+//                    $user->last_session =  Carbon::now();
+//                    $user->save();
+//                }
                 return $user;
             }
 
