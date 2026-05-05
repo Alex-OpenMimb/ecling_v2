@@ -30,9 +30,10 @@ class FormLimitedTimeReport extends ModalComponent
     public function updateOrStore()
     {
         $this->validate();
-        CoreConfig::where('code','report_limited_hours')->update([
-            'value' => $this->limitedHours
-        ]);
+        CoreConfig::updateOrCreate(
+            ['code' => 'report_limited_hours'], // condición de búsqueda
+            ['value' => $this->limitedHours]   // valores a actualizar o crear
+        );
         toastr()->success('Tiempo actualizado con éxito!', 'Felicitaciones');
         $this->closeModal();
     }
