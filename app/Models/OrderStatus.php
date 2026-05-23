@@ -9,6 +9,14 @@ class OrderStatus extends Model
 {
     use HasFactory;
 
+    public const SYSTEM_NAMES = [
+        'Abierta',
+        'Cerrada',
+        'Rechazada',
+        'Declinada',
+        'Facturada',
+    ];
+
     protected $table = 'order_status';
 
     protected $fillable = [
@@ -21,4 +29,25 @@ class OrderStatus extends Model
     protected $casts = [
         'state' => 'boolean',
     ];
+
+    public function serviceOrders()
+    {
+        return $this->hasMany(ServiceOrder::class, 'status', 'name');
+    }
+
+    public function isSystemDefault(): bool
+    {
+        return in_array($this->name, self::SYSTEM_NAMES, true);
+    }
+
+    public function isLockedForEditing(?int $assignedOrdersCount = null): bool
+    {
+        if ($this->isSystemDefault()) {
+            return true;
+        }
+
+        $count = $assignedOrdersCount ?? $this->serviceOrders()->count();
+
+        return $count > 0;
+    }
 }
