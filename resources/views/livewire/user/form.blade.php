@@ -13,6 +13,7 @@
 
                     <div class="h-4">
                         @error('name') <span class="text-red-400 text-sm">{{ $message }}</span> @enderror
+                        @error('slug') <span class="text-red-400 text-sm">{{ $message }}</span> @enderror
                     </div>
                 </div>
                 <div class="md:w-1/2 pr-0 md:pr-4 mb-4 md:mb-0">
