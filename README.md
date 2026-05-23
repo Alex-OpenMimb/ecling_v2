@@ -30,7 +30,8 @@ Si alguno no existe se mostrará un mensaje de error y el proceso finalizará si
    ```
 
 3. Si todo es correcto verás el mensaje `Configuration permissions synced successfully.` indicando que los permisos fueron creados (si no existían) y asignados a los roles.
-
+4. Seeders especificos:
+- Para los estados de las ordenes: php artisan db:seed --class=OrderStatusSeeder
 ### Ampliaciones
 
 - Para agregar permisos adicionales, edita el arreglo `$permissionNames` dentro de `app/Console/Commands/SyncConfigurationPermissions.php`.
