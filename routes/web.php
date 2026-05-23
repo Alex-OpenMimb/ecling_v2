@@ -37,6 +37,9 @@ use App\Livewire\TitlePhoto\Show as TitlePhotoShow;
 use App\Livewire\Quotation\FormManage as QuotationFormManage;
 use App\Livewire\Quotation\Index as QuotationIndex;
 use App\Livewire\Quotation\Show as QuotationShow;
+use App\Livewire\OrderStatus\Form as OrderStatusForm;
+use App\Livewire\OrderStatus\Index as OrderStatusIndex;
+use App\Livewire\OrderStatus\Show as OrderStatusShow;
 use App\Livewire\QuotationStatus\Form as QuotationStatusForm;
 use App\Livewire\QuotationStatus\Index as QuotationStatusIndex;
 use App\Livewire\QuotationStatus\Show as QuotationStatusShow;
@@ -136,6 +139,11 @@ Route::middleware(['auth'])->prefix('admin')->group( function() {
     Route::get('configurations/quotation-status/create', QuotationStatusForm::class)->middleware('can:admin.configurations')->name('admin.configurations.quotation-status.create');
     Route::get('configurations/quotation-status/{quotationStatus}/edit', QuotationStatusForm::class)->middleware('can:admin.configurations')->name('admin.configurations.quotation-status.edit');
     Route::get('configurations/quotation-status/{quotationStatus}', QuotationStatusShow::class)->middleware('can:admin.configurations')->name('admin.configurations.quotation-status.show');
+
+    Route::get('configurations/order-status', OrderStatusIndex::class)->middleware('can:admin.configurations')->name('admin.configurations.order-status.index');
+    Route::get('configurations/order-status/create', OrderStatusForm::class)->middleware('can:admin.configurations')->name('admin.configurations.order-status.create');
+    Route::get('configurations/order-status/{orderStatus}/edit', OrderStatusForm::class)->middleware('can:admin.configurations')->name('admin.configurations.order-status.edit');
+    Route::get('configurations/order-status/{orderStatus}', OrderStatusShow::class)->middleware('can:admin.configurations')->name('admin.configurations.order-status.show');
 
 
 });

@@ -78,6 +78,27 @@
                 <article class="border border-gray-100 rounded-xl shadow-xs hover:shadow-md transition-shadow duration-200 bg-white p-6 flex flex-col">
                     <div class="flex items-center justify-between">
                         <div class="h-12 w-12 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center">
+                            <i class='bx bx-clipboard text-2xl'></i>
+                        </div>
+                    </div>
+
+                    <h2 class="text-lg font-semibold text-gray-800 mt-5">Estados de orden de servicio</h2>
+                    <p class="text-sm text-gray-500 mt-3 flex-1 leading-relaxed">
+                        Administra los estados disponibles para las órdenes de servicio.
+                    </p>
+
+                    <a href="{{ route('admin.configurations.order-status.index') }}"
+                       class="mt-6 inline-flex items-center text-sm font-semibold text-blue-600 hover:text-blue-800 transition-colors duration-200">
+                        Empezar
+                        <i class="ri-arrow-right-line ml-2 text-lg"></i>
+                    </a>
+                </article>
+            </div>
+
+            <div class="w-full mt-10">
+                <article class="border border-gray-100 rounded-xl shadow-xs hover:shadow-md transition-shadow duration-200 bg-white p-6 flex flex-col">
+                    <div class="flex items-center justify-between">
+                        <div class="h-12 w-12 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center">
                             <i class='bx bx-image text-2xl'></i>
                         </div>
                     </div>

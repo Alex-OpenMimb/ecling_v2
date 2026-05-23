@@ -2,7 +2,9 @@
 
 namespace App\Livewire\ServiceOrder;
 
+use App\Models\OrderStatus;
 use App\Models\ServiceOrder;
+use Illuminate\Validation\Rule;
 use LivewireUI\Modal\ModalComponent;
 
 class HandleState  extends ModalComponent
@@ -22,7 +24,12 @@ class HandleState  extends ModalComponent
 
     public function render()
     {
-        return view('livewire.serviceOrder.handleState');
+        return view('livewire.serviceOrder.handleState', [
+            'orderStatuses' => OrderStatus::query()
+                ->where('state', true)
+                ->orderBy('name')
+                ->get(),
+        ]);
     }
 
 
@@ -40,7 +47,15 @@ class HandleState  extends ModalComponent
     public function rules()
     {
         return [
-            'status' => 'required|in:Facturada,Cerrada'
+            'status' => [
+                'required',
+                Rule::in(
+                    OrderStatus::query()
+                        ->where('state', true)
+                        ->pluck('name')
+                        ->all()
+                ),
+            ],
         ];
     }
 
