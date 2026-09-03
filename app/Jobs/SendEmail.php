@@ -36,7 +36,7 @@ class SendEmail implements ShouldQueue
         try {
             $headquarter_id = $this->general_report->headquarter_id;
             $email          = Headquarter::where('id', $headquarter_id)->select('name','email')->first()->email;
-            Mail::to([$email,'ordenes.servicios@technicservicesas.com'])
+            Mail::to([$email,'operativo@ecling.co'])
                 ->send( new  GeneralReportMail( $this->general_report ));
         }catch ( Throwable  $e ){
             Log::error('Error to send email: '. $e->getMessage());
