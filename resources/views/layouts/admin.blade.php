@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
    {{-- <link href="https://cdn.tailwindcss.com" rel="stylesheet"> --}}
-    <link rel="icon" href="{{asset('image/logo/logo.jpeg')}}" type="image/x-icon">
+    <link rel="icon" href="{{asset('image/logo/logo-ecling.jpeg')}}" type="image/x-icon">
 </head>
 <body class="h-screen overflow-hidden flex items-center justify-center" style="background: #edf2f7;">
 <!DOCTYPE html>
@@ -28,7 +28,7 @@
 <!--sidenav -->
 <div class="container-admin fixed left-0 top-0 w-64 h-full bg-[#ffffff] p-4 z-50 sidebar-menu transition-transform border-r border-gray-300 overflow-y-auto no-scrollbar">
     <div class="flex">
-        <img class="w-12 h-12 rounded-full" src="{{asset('image/logo/logo.jpeg')}}" alt="Logo Technic Service"/>
+        <img class="w-12 h-12 rounded-full" src="{{asset('image/logo/logo-ecling.jpeg')}}" alt="Logo Ecling"/>
         <h2 class="font-bold text-2xl text-gray-500">Ecling</h2>
     </div>
 
