@@ -68,8 +68,6 @@ return new class extends Migration
             $table->boolean('preventive_services')->default(0);
             $table->boolean('preventive_services_first')->default(0);
             $table->boolean('schedule_assigned')->default(0);
-            $table->string('plate_photo')->nullable();
-            $table->string('perimeter_photo')->nullable();
 
             $table->unsignedBigInteger('equipment_id'); //Relations many has many
             $table->foreign('equipment_id')->references('id')->on('equipments');
@@ -112,6 +110,21 @@ return new class extends Migration
             $table->softDeletes();
         });
 
+
+        Schema::create('preventive_routines_equipments', function (Blueprint $table){
+            $table->bigIncrements('id');
+
+            $table->unsignedBigInteger('equipment_id');
+            $table->foreign('equipment_id')->references('id')->on('clients_has_equipments');
+
+            $table->unsignedBigInteger('preventive_routine_id');
+            $table->foreign('preventive_routine_id')->references('id')->on('preventive_routines');
+
+            $table->integer('custom_frequency')->nullable();
+            $table->timestamps();
+
+        });
+
     }
 
     /**
@@ -124,5 +137,6 @@ return new class extends Migration
         Schema::dropIfExists('addresses');
         Schema::dropIfExists('clients_has_equipments');
         Schema::dropIfExists('schedules');
+        Schema::dropIfExists('preventive_routines_equipments');
     }
 };

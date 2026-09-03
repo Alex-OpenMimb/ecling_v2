@@ -25,14 +25,6 @@
                         <p>{{$activity->activity}}</p>
                     @endforeach
                 </div>
-
-                <div class=" p-4 border border-gray-300 rounded overflow-y-auto custom-height-100">
-                    <h3  class="font-semibold mb-2">Equipos</h3>
-                    @foreach($equipments_list as $equipment)
-                        <p class="ml-2"> {{ $equipment->name }} - {{ $equipment->brand_name }} - {{ $equipment->equipment_model }} - {{ $equipment->volt_measurement }} {{ $equipment->volt_unit }} @if(  $equipment->amperage_measurement ) {{ $equipment->amperage_measurement }} {{ $equipment->ampere_unit }} @endif </p>
-                    @endforeach
-
-                </div>
             </div>
 
             <div class="mt-6 flex justify-end space-x-4">

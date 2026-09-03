@@ -19,6 +19,6 @@
 <p style="margin-bottom: 40px">Se envía reporte de servicio ejecutado.</p>
 <p>Cordialmente</p>
 
-<div>  <img src="https://technicservicesas.com/image/logo/email_signature.jpg" alt="Logo" width="600" height="auto" class="image"> </div>
+<div>  <img src="https://staging.ecling.co/image/logo/logo-ecling.jpeg" alt="Logo" width="600" height="auto" class="image"> </div>
 </body>
 </html>

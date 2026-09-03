@@ -26,6 +26,7 @@ use App\Livewire\PreventiveRoutine\IndexPreventiveRoutine;
 use App\Livewire\Schedule\IndexSchedule;
 use App\Livewire\ServiceOrder\FormServiceOrder;
 use App\Livewire\ServiceOrder\IndexServiceOrder;
+use App\Livewire\ServiceOrder\IndexServiceOrderClient;
 use App\Livewire\Store\IndexStore;
 use App\Livewire\EquipmentClass\Form as EquipmentClassForm;
 use App\Livewire\EquipmentClass\Index as EquipmentClassIndex;
@@ -33,6 +34,19 @@ use App\Livewire\EquipmentClass\Show as EquipmentClassShow;
 use App\Livewire\TitlePhoto\Form as TitlePhotoForm;
 use App\Livewire\TitlePhoto\Index as TitlePhotoIndex;
 use App\Livewire\TitlePhoto\Show as TitlePhotoShow;
+use App\Livewire\Quotation\FormManage as QuotationFormManage;
+use App\Livewire\Quotation\Index as QuotationIndex;
+use App\Livewire\Quotation\Show as QuotationShow;
+use App\Livewire\OrderStatus\Form as OrderStatusForm;
+use App\Livewire\OrderStatus\Index as OrderStatusIndex;
+use App\Livewire\OrderStatus\Show as OrderStatusShow;
+use App\Livewire\QuotationStatus\Form as QuotationStatusForm;
+use App\Livewire\QuotationStatus\Index as QuotationStatusIndex;
+use App\Livewire\QuotationStatus\Show as QuotationStatusShow;
+use App\Livewire\Visit\Show as VisitShow;
+use App\Livewire\VisitReason\Form as VisitReasonForm;
+use App\Livewire\VisitReason\Index as VisitReasonIndex;
+use App\Livewire\VisitReason\Show as VisitReasonShow;
 use App\Livewire\User\FormUser;
 use App\Livewire\User\IndexUser;
 use App\Livewire\User\ProfileUser;
@@ -85,7 +99,18 @@ Route::middleware(['auth'])->prefix('admin')->group( function() {
     Route::get('planner/create/corrective',FormEvent::class)->middleware('can:admin.planner.corrective')->name('admin.planner.corrective');
     Route::get('planner',IndexEvent::class)->middleware('can:admin.planner')->name('admin.planner');
 
+    Route::get('visit', \App\Livewire\Visit\IndexVisit::class)->middleware('can:admin.visit')->name('admin.visit.index');
+    Route::get('visit/create', \App\Livewire\Visit\FormVisit::class)->middleware('can:admin.visit.create')->name('admin.visit.create');
+    Route::get('visit/manage/{visit?}', \App\Livewire\Visit\FormManageVisit::class)->middleware('can:admin.visit.edit')->name('admin.visit.manage');
+    Route::get('visit/{visit}', VisitShow::class)->middleware('can:admin.visit')->name('admin.visit.show');
+    Route::get('visit/{visit}/edit', \App\Livewire\Visit\FormVisit::class)->middleware('can:admin.visit.edit')->name('admin.visit.edit');
+
+    Route::get('quotations', QuotationIndex::class)->middleware('can:admin.quotations')->name('admin.quotations');
+    Route::get('quotations/{quotation}/manage', QuotationFormManage::class)->middleware('can:admin.quotations')->name('admin.quotations.manage');
+    Route::get('quotations/{quotation}', QuotationShow::class)->middleware('can:admin.quotations')->name('admin.quotations.show');
+
     Route::get('services-order',IndexServiceOrder::class)->middleware('can:admin.service-order')->name('admin.service-order');
+    Route::get('services-order/client/{clientId}', IndexServiceOrderClient::class)->whereNumber('clientId')->middleware('can:admin.service-order')->name('admin.service-order.client');
     Route::get('services-order/create/schedule',FormServiceOrder::class)->middleware('can:admin.service-order.schedule.create')->name('admin.service-order.schedule.create');
     Route::get('services-order/create/corrective',FormServiceOrder::class)->middleware('can:admin.service-order.corrective.create')->name('admin.service-order.corrective.create');
 
@@ -104,6 +129,21 @@ Route::middleware(['auth'])->prefix('admin')->group( function() {
     Route::get('configurations/title-photo/create', TitlePhotoForm::class)->middleware('can:admin.configurations')->name('admin.configurations.title-photo.create');
     Route::get('configurations/title-photo/{titlePhoto}/edit', TitlePhotoForm::class)->middleware('can:admin.configurations')->name('admin.configurations.title-photo.edit');
     Route::get('configurations/title-photo/{titlePhoto}', TitlePhotoShow::class)->middleware('can:admin.configurations')->name('admin.configurations.title-photo.show');
+
+    Route::get('configurations/visit-reasons', VisitReasonIndex::class)->middleware('can:admin.configurations')->name('admin.configurations.visit-reasons.index');
+    Route::get('configurations/visit-reasons/create', VisitReasonForm::class)->middleware('can:admin.configurations')->name('admin.configurations.visit-reasons.create');
+    Route::get('configurations/visit-reasons/{visitReason}/edit', VisitReasonForm::class)->middleware('can:admin.configurations')->name('admin.configurations.visit-reasons.edit');
+    Route::get('configurations/visit-reasons/{visitReason}', VisitReasonShow::class)->middleware('can:admin.configurations')->name('admin.configurations.visit-reasons.show');
+
+    Route::get('configurations/quotation-status', QuotationStatusIndex::class)->middleware('can:admin.configurations')->name('admin.configurations.quotation-status.index');
+    Route::get('configurations/quotation-status/create', QuotationStatusForm::class)->middleware('can:admin.configurations')->name('admin.configurations.quotation-status.create');
+    Route::get('configurations/quotation-status/{quotationStatus}/edit', QuotationStatusForm::class)->middleware('can:admin.configurations')->name('admin.configurations.quotation-status.edit');
+    Route::get('configurations/quotation-status/{quotationStatus}', QuotationStatusShow::class)->middleware('can:admin.configurations')->name('admin.configurations.quotation-status.show');
+
+    Route::get('configurations/order-status', OrderStatusIndex::class)->middleware('can:admin.configurations')->name('admin.configurations.order-status.index');
+    Route::get('configurations/order-status/create', OrderStatusForm::class)->middleware('can:admin.configurations')->name('admin.configurations.order-status.create');
+    Route::get('configurations/order-status/{orderStatus}/edit', OrderStatusForm::class)->middleware('can:admin.configurations')->name('admin.configurations.order-status.edit');
+    Route::get('configurations/order-status/{orderStatus}', OrderStatusShow::class)->middleware('can:admin.configurations')->name('admin.configurations.order-status.show');
 
 
 });

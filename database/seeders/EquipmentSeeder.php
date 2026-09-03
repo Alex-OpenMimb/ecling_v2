@@ -24,16 +24,18 @@ class EquipmentSeeder extends Seeder
      */
     public function run(): void
     {
-        $this->create_location();
-        $this->create_brands();
+
         $this->create_equipment_classes();
-        $this->create_volts();
-        $this->create_ampere();
-        $this->create_models();
-        $this->create_equipments();
-        $this->create_materials();
-        $this->create_spare_parts();
-        $this->create_units();
+
+//        $this->create_location();
+//        $this->create_brands();
+//        $this->create_volts();
+//        $this->create_ampere();
+//        $this->create_models();
+//        $this->create_equipments();
+//        $this->create_materials();
+//        $this->create_spare_parts();
+//        $this->create_units();
     }
 
 
@@ -62,11 +64,13 @@ class EquipmentSeeder extends Seeder
 
     protected function create_equipment_classes()
     {
-        foreach (EquipmentClass::TYPE AS $key => $value ){
-            EquipmentClass::create([
-                'name' =>$value,
-                'slug' => Str::slug($value,'-')
-            ]);
+        if( EquipmentClass::count() === 0 ){
+            foreach (EquipmentClass::TYPE AS $key => $value ){
+                EquipmentClass::create([
+                    'name' =>$value,
+                    'slug' => Str::slug($value,'-')
+                ]);
+            }
         }
     }
 
@@ -83,11 +87,13 @@ class EquipmentSeeder extends Seeder
 
     protected function create_models()
     {
-        foreach (EquipmentModel::MODEL AS $key => $value ){
-            EquipmentModel::create([
-                'model' =>  $value['model'],
-                'equipment_class_id' => $value['equipment_class_id']
-            ]);
+        if( EquipmentModel::count() === 0 ){
+            foreach (EquipmentModel::MODEL AS $key => $value ){
+                EquipmentModel::create([
+                    'model' =>  $value['model'],
+                    'equipment_class_id' => $value['equipment_class_id']
+                ]);
+            }
         }
     }
 

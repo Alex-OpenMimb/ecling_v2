@@ -33,17 +33,17 @@ class Equipment extends Model
 
     const EQUIPMENTS = [
         [
-            'name'=>'Nevera',
-            'slug'=>'nevera',
+            'name'=>'Aire de Ventana',
+            'slug'=>'aire_de_ventana',
             'equipment_model_id'=> 6,
-            'equipment_class_id'=> 3,
+            'equipment_class_id'=> 1,
             'brand_id'=> 1,
             'volt_id'=> 1,
             'ampere_id'=> 2,
         ],
         [
-            'name'=>'Estufa',
-            'slug'=>'estufa',
+            'name'=>'Mini Split',
+            'slug'=>'mini_split',
             'equipment_model_id'=> 1,
             'equipment_class_id'=> 1,
             'brand_id'=> 1,
@@ -51,10 +51,10 @@ class Equipment extends Model
             'ampere_id'=> 1,
         ],
         [
-            'name'=>'Licuadora',
-            'slug'=>'licuadora',
+            'name'=>'Aire Convencional',
+            'slug'=>'aire_convencional',
             'equipment_model_id'=> 3,
-            'equipment_class_id'=> 2,
+            'equipment_class_id'=> 1,
             'brand_id'=> 2,
             'volt_id'=> 1,
             'ampere_id'=> 1,
@@ -84,18 +84,20 @@ class Equipment extends Model
 
     public function volts()
     {
-        return $this->belongsTo( Volt::class );
+        return $this->belongsTo( Volt::class,'volt_id' );
     }
 
     public function amperes()
     {
-        return $this->belongsTo( Ampere::class );
+        return $this->belongsTo( Ampere::class,'ampere_id' );
     }
 
 
     public function clients()
     {
-        return  $this->belongsToMany( Client::class );
+        return  $this->belongsToMany( Client::class,  'ClientsEquipments',
+            'equipment_id',
+            'client_id' );
     }
 
     public function preventiveRoutines()

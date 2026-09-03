@@ -33,19 +33,19 @@ class CorrectiveActivity extends Model
         ],
         [
             'activity'=>'Cambiar cables',
-            'equipment_class_id' => 2
+            'equipment_class_id' => 1
         ],
         [
             'activity'=>'Reparar tablero',
-            'equipment_class_id' => 2
+            'equipment_class_id' => 1
         ],
         [
             'activity'=>'Cambiar refrigerante',
-            'equipment_class_id' => 3
+            'equipment_class_id' => 1
         ],
         [
             'activity'=>'Reparar puerta',
-            'equipment_class_id' => 3
+            'equipment_class_id' => 1
         ],
     ];
 

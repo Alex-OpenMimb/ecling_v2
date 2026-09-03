@@ -126,12 +126,11 @@ return new class extends Migration
             $table->unsignedBigInteger('ampere_id')->nullable();
             $table->foreign('ampere_id')->references('id')->on('amperes');
 
-            $columns    = ['equipment_model_id','equipment_class_id','brand_id'
-                ,'volt_id','ampere_id' ];
-            $table->unique( $columns,'idx_equipment' );
-
             $table->timestamps();
             $table->softDeletes();
+
+            // Índice único compuesto para evitar duplicados
+            $table->unique(['name', 'equipment_model_id', 'equipment_class_id', 'brand_id', 'volt_id', 'ampere_id'], 'equipments_unique_composite');
         });
     }
 

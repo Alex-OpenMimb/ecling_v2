@@ -48,6 +48,7 @@ class RoleSeeder extends Seeder
     {
         $PERMISSIONS = [
             'admin.users',
+            'admin.quotations',
             'admin.create.user',
             'admin.edit.user',
             'admin.profile.user',
@@ -79,6 +80,10 @@ class RoleSeeder extends Seeder
             'admin.corrective-management.edit',
             'admin.planner.schedule',
             'admin.planner',
+            'admin.visit',
+            'admin.visit.create',
+            'admin.visit.edit',
+            'admin.visit.delete',
             'admin.planner.corrective',
             'admin.service-order',
             'admin.service-order.schedule.create',

@@ -29,7 +29,7 @@
 <div class="container-admin fixed left-0 top-0 w-64 h-full bg-[#ffffff] p-4 z-50 sidebar-menu transition-transform border-r border-gray-300 overflow-y-auto no-scrollbar">
     <div class="flex">
         <img class="w-12 h-12 rounded-full" src="{{asset('image/logo/logo.jpeg')}}" alt="Logo Technic Service"/>
-        <h2 class="font-bold text-2xl text-gray-500">Technic Service</h2>
+        <h2 class="font-bold text-2xl text-gray-500">Ecling</h2>
     </div>
 
     <ul class="mt-4">
@@ -100,6 +100,30 @@
                     </li>
                 </ul>
 
+                <ul class="pl-7 mt-2 hidden group-[.selected]:block">
+                    <li class="mb-4">
+                        <a href="{{route('admin.visit.index')}}" class="text-gray-900 text-sm flex items-center hover:text-blue-600 before:contents-[''] before:w-1 before:h-1 before:rounded-full before:bg-gray-300 before:mr-3">Programar visita</a>
+                    </li>
+                </ul>
+
+            </li>
+        @endcan
+
+        @can('admin.quotations')
+            <li class="mb-1 group">
+                <a href="" class="flex font-semibold items-center py-2 px-4 text-gray-500 hover:bg-blue-200 hover:text-blue-800 rounded-md group-[.active]:bg-gray-800 group-[.active]:text-white group-[.selected]:bg-blue-200 group-[.selected]:text-blue-800 sidebar-dropdown-toggle">
+                    <i class='bx bx-calendar  mr-3 text-lg'></i>
+                    <span class="text-sm">Cotizaciones</span>
+                    <i class="ri-arrow-right-s-line ml-auto group-[.selected]:rotate-90"></i>
+
+                </a>
+
+                <ul class="pl-7 mt-2 hidden group-[.selected]:block">
+                    <li class="mb-4">
+                        <a href="{{ route('admin.quotations') }}" class="text-gray-900 text-sm flex items-center hover:text-blue-600 before:contents-[''] before:w-1 before:h-1 before:rounded-full before:bg-gray-300 before:mr-3">Gestión de cotizaciones</a>
+                    </li>
+                </ul>
+
             </li>
         @endcan
 
@@ -138,12 +162,11 @@
                     </li>
                     @endcan
 
-                    @can('admin.materials')
-                    <li class="mb-4">
-                        <a href="{{route('admin.materials')}}" class="text-gray-900 text-sm flex items-center hover:text-blue-600 before:contents-[''] before:w-1 before:h-1 before:rounded-full before:bg-gray-300 before:mr-3">Materiales</a>
-                    </li>
-
-                        @endcan
+                     {{--  @can('admin.materials')
+                        <li class="mb-4">
+                            <a href="{{route('admin.materials')}}" class="text-gray-900 text-sm flex items-center hover:text-blue-600 before:contents-[''] before:w-1 before:h-1 before:rounded-full before:bg-gray-300 before:mr-3">Materiales</a>
+                        </li>
+                        @endcan --}}
                 </ul>
             </li>
         @endcan

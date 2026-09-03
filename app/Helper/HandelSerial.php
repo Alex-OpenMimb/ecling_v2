@@ -55,40 +55,40 @@ class HandelSerial
 
     /**
      * Obtiene el código de prefijo basado en el slug o nombre de EquipmentClass
-     * 
+     *
      * @param int $equipment_class_id ID de la clase de equipo
-     * @return string Código de prefijo (ej: 'TEHS-GAS-', 'TEHS-ELE-', etc.)
+     * @return string Código de prefijo (ej: 'ECLIN-GAS-', 'ECLIN-ELE-', etc.)
      */
     protected function set_equipment_class( $equipment_class_id )
     {
         // Consultar la clase de equipo desde la base de datos
         // find() automáticamente excluye registros con soft deletes
         $equipmentClass = EquipmentClass::find($equipment_class_id);
-        
+
         // Si no existe la clase o está eliminada, retornar código genérico
         if (!$equipmentClass) {
-            return 'TEHS-GEN-';
+            return 'ECLIN-GEN-';
         }
 
         // Obtener el slug y nombre (normalizados a minúsculas para comparación)
         $slug = strtolower(trim($equipmentClass->slug));
         $name = strtolower(trim($equipmentClass->name));
-        
+
         // Mapeo dinámico basado en el slug o nombre
         // Compatible con diferentes variaciones de escritura
         $codeMapping = [
             // Gas
-            'gas' => 'TEHS-GAS-',
-            
+            'gas' => 'ECLIN-GAS-',
+
             // Eléctrico (con y sin tilde)
-            'electrico' => 'TEHS-ELE-',
-            'eléctrico' => 'TEHS-ELE-',
-            'electrica' => 'TEHS-ELE-',
-            'eléctrica' => 'TEHS-ELE-',
-            
+            'electrico' => 'ECLIN-ELE-',
+            'eléctrico' => 'ECLIN-ELE-',
+            'electrica' => 'ECLIN-ELE-',
+            'eléctrica' => 'ECLIN-ELE-',
+
             // Refrigeración (con y sin tilde)
-            'refrigeracion' => 'TEHS-REF-',
-            'refrigeración' => 'TEHS-REF-',
+            'refrigeracion' => 'ECLIN-REF-',
+            'refrigeración' => 'ECLIN-REF-',
         ];
 
         // Buscar coincidencia exacta en el slug
@@ -116,6 +116,6 @@ class HandelSerial
         }
 
         // Si no hay coincidencia, retornar código genérico
-        return 'TEHS-GEN-';
+        return 'ECLIN-GEN-';
     }
 }

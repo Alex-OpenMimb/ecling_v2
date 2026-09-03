@@ -34,6 +34,9 @@
             <th class="px-2 text-left  text-black bg-neutral-50 dark:text-white dark:bg-neutral-800">
                 Equipos*
             </th>
+            <th class="px-2 text-left  text-black bg-neutral-50 dark:text-white dark:bg-neutral-800">
+               código*
+            </th>
             <th class="px-2 text-left text-black bg-neutral-50 dark:text-white dark:bg-neutral-800"
             >
                 Frecuencia
@@ -73,6 +76,7 @@
                             type="button"  title="ver equipo" class="cursor-pointer" > <div class="truncate-13">{{$schedule->headquarter_name}}</div> </button>
                 </x-table.row>
                 <x-table.row> <button    onclick="Livewire.dispatch('openModal', { component: 'client-equipment.show-client-equipment',arguments:{client_equipment_id: {{$schedule->equipment_id}}  } })" class="truncate-13 cursor-pointer" >  {{$schedule->equipment_name}} </button> </x-table.row>
+                <x-table.row>  {{$schedule->internal_id}}  </x-table.row>
                 <x-table.row> <button type="button"  title="Editar frecuencia"
                                       @if($schedule->status === 'Agendada' || $schedule->status === 'Agendada-Orden')
                                           wire:click="show_error_msm"
@@ -81,13 +85,7 @@
                                       @endif
                                       class="cursor-pointer"> {{$schedule->frequency}}</button> </x-table.row>
                 <x-table.row> {{$schedule->last_date}} </x-table.row>
-                <x-table.row>  <button type="button"  title="editar fecha"
-                                       @if($schedule->status === 'Agendada' || $schedule->status === 'Agendada-Orden')
-                                           wire:click="show_error_msm"
-                                       @else
-                                           onclick="Livewire.dispatch('openModal', { component: 'schedule.form-date',arguments:{schedule: {{$schedule->id}} } })"
-                                       @endif
-                                       class="cursor-pointer"> {{$schedule->next_date}}  </button>  </x-table.row>
+                <x-table.row> {{$schedule->next_date}} </x-table.row>
                 <x-table.row> {{$schedule->days}} </x-table.row>
                 <td   class="px-2 bg-neutral-100 group-odd:bg-white group-hover:bg-neutral-200">
                     <button  onclick="Livewire.dispatch('openModal', { component: 'schedule.observations',arguments:{schedule: {{$schedule->id}} } })" class="p-1 text-orange-900 rounded hover:bg-orange-900 hover:text-white" title="ver observaciones">

@@ -4,6 +4,7 @@
         <div>
             <x-forms.search property="query" method="search" id="clients_search"></x-forms.search>
         </div>
+        @if(!$clientId)
         <div class="pr-0 md:pr-4 mb-4 md:mb-0">
             <input
                 type="text"
@@ -13,6 +14,7 @@
                 placeholder="Filtrar por cliente"
                 class="mb-2 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
         </div>
+        @endif
         <div class="pr-0 md:pr-4 mb-4 md:mb-0">
             <input
                 type="text"
@@ -29,6 +31,17 @@
                 <option value="75">75</option>
                 <option value="100">100</option>
             </select>
+        </div>
+        <div class="pr-0 md:pr-4 mb-4 md:mb-0 flex items-end">
+            <button
+                type="button"
+                wire:click="massiveSend"
+                wire:loading.attr="disabled"
+                class="mb-2 whitespace-nowrap bg-white border border-blue-500 text-blue-500 px-4 py-2.5 rounded-lg text-sm font-medium hover:bg-blue-500 hover:text-white transition duration-300 disabled:opacity-50"
+            >
+                <span wire:loading.remove wire:target="massiveSend">Envío masivo</span>
+                <span wire:loading wire:target="massiveSend">Envío masivo</span>
+            </button>
         </div>
         <div  wire:loading >  <x-loader></x-loader> </div>
     </div>
@@ -47,33 +60,36 @@
             @foreach($orders as $order)
                 <tr class="group" wire:key="{{ $order->id }}">
                     <x-table.row> {{$counter}} </x-table.row>
+                    <x-table.row>
+                        <div class="flex justify-center">
+                            <input
+                                type="checkbox"
+                                wire:key="so-select-{{ $order->id }}"
+                                class="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed"
+                                @if($order->status === 'Cerrada')
+                                    wire:model.live="selectedOrderIds"
+                                    value="{{ $order->id }}"
+                                @else
+                                    disabled
+                                @endif
+                            />
+                        </div>
+                    </x-table.row>
                     <x-table.row> {{$order->user_name}} </x-table.row>
                     <x-table.row> {{$order->serial}} </x-table.row>
                     <x-table.row>  <button onclick="Livewire.dispatch('openModal', { component: 'client-equipment.show-client-equipment',arguments:{client_equipment_id: {{$order->client_equipment_id}}  } })" > {{$order->equipments_name}} </button>  </x-table.row>
                     <x-table.row> <div class="truncate-13" title="{{$order->name}}"> {{$order->name}} </div> </x-table.row>
+                    <x-table.row>
+                        <div class="truncate-13" title="{{ $order->headquarter_name ?? '' }}">
+                            {{ $order->headquarter_name ?? '—' }}
+                        </div>
+                    </x-table.row>
 
                     <x-table.row> {{$order->activity}} </x-table.row>
                     <x-table.row> <div class="truncate-20" > @if( $order->observations ) {{$order->observations}} @else Sin Observaciones  @endif </div> </x-table.row>
 
                     <x-table.row>
-                            @if( $order->status === 'Rechazada' || $order->status === 'Declinada' )
-                             <div  onclick="Livewire.dispatch('openModal', { component: 'service-order.form-reject',arguments:{service_order: {{$order->id}} } })" class="cursor-pointer text-white text-center bg-yellow-500">{{$order->status}} </div>
-                            @else
-                              <div
-                                class=" text-white text-center
-                                @if($order->status === 'Abierta')
-                                  bg-red-500
-                                @elseif( $order->status === 'Cerrada' )
-                                   bg-blue-500
-                                    @elseif( $order->status === 'Facturada' )
-                                   bg-green-500
-                                @endif
-                                "
-                                >
                                   {{$order->status}}
-                              </div>
-
-                             @endif
                     </x-table.row>
                     <x-table.row>
                         <div class="flex justify-center">
@@ -92,12 +108,7 @@
                             </button>
                             @can( 'handel-status')
                                     <button
-                                        @if( $order->status === 'Cerrada'  || $order->status === 'Facturada')
-                                            onclick="Livewire.dispatch('openModal', { component: 'service-order.handle-state',arguments:{service_order: {{$order->id}} } })"
-                                        @else
-                                            wire:click="error_message_order('status')"
-                                        @endif
-
+                                        onclick="Livewire.dispatch('openModal', { component: 'service-order.handle-state',arguments:{service_order: {{$order->id}} } })"
                                         title="Cambiar estado"    class="p-1 text-green-500 rounded hover:bg-green-500 hover:text-white cursor-pointer">
                                         <svg class="h-5 w-5 text-green-500 hover:text-white"  fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>

@@ -13,6 +13,7 @@
                 <div class="md:w-1/2 pr-0 md:pr-4 mb-4 md:mb-0">
                     <label for="nit" class="block text-gray-700 font-bold mb-2"  @if( $action && $routine_validator ) title="Rutina en uso no se puede editar"  @endif >Nombre*:</label>
                     <input wire:model.defer="name"  @if( $action && $routine_validator ) disabled @endif  type="text" id="name" name="name" class="focus:outline-none bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full  p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400  dark:focus:ring-blue-500 dark:focus:border-blue-500  mb-2">
+
                     <div class="h-4">
                         @error('name') <span class="text-red-400 text-sm">{{ $message }}</span> @enderror
                     </div>
@@ -20,13 +21,8 @@
 
 
                 <div class="md:w-1/2 pr-0 md:pr-4 mb-4 md:mb-0">
-                    <label for="email" class="block text-gray-700 font-bold mb-2" title="Nomenclatura principal">Frecuencia:</label>
-                    <select id="frequency_id" wire:model.defer="frequency" name="frequency" class="mb-2 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400  dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                        <option value="0">Seleccionar</option>
-                        @for($index = 1;$index <= 12; $index++)
-                            <option value="{{$index}}">{{$index}}</option>
-                        @endfor
-                    </select>
+                    <label for="email" class="block text-gray-700 font-bold mb-2" title="Nomenclatura principal">Frecuencia (en días):</label>
+                    <input id="frequency_id" wire:model.defer="frequency" name="frequency"  type="text"  class="focus:outline-none bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full  p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400  dark:focus:ring-blue-500 dark:focus:border-blue-500  mb-2">
                     <div class="h-4">
                         @error('frequency') <span class="text-red-400 text-sm">{{ $message }}</span> @enderror
                     </div>
@@ -50,7 +46,7 @@
             <!-- block 2 -->
 
             <div class="flex flex-col md:flex-row justify-between mb-4 md:space-x-4 space-y-4 md:space-y-0">
-                <div class="flex-1 p-4 border border-gray-300 rounded overflow-y-auto h-40">
+               {{-- <div class="flex-1 p-4 border border-gray-300 rounded overflow-y-auto h-40">
 
                     <div class="flex" >
                         <h3 class="font-semibold mb-2 mr-2">Equipos</h3>
@@ -74,7 +70,7 @@
 
                     @endif
 
-                </div>
+                </div> --}}
 
 
                 <div class="flex-1 p-4 border border-gray-300 rounded overflow-y-auto h-40">
@@ -121,6 +117,16 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        .swal2-confirm {
+            background-color: #3085d6 !important;
+            color: white !important;
+        }
+        .swal2-cancel {
+            background-color: #d33 !important;
+            color: white !important;
+        }
+    </style>
     @script
     <script >
         let toggle;
@@ -153,7 +159,6 @@
         })
 
         $wire.on('open_modal', () => {
-
             Swal.fire({
                 title: "¿Estás cambiando la frecuencia, estás seguro?",
                 text: "Este cambio afectará las fechas establecidas en el cronograma para los equipos que tienen " +
@@ -162,7 +167,12 @@
                 showCancelButton: true,
                 confirmButtonColor: "#3085d6",
                 cancelButtonColor: "#d33",
-                confirmButtonText: "Si!"
+                confirmButtonText: "Si!",
+                cancelButtonText: "Cancelar",
+                buttonsStyling: true,
+                reverseButtons: false,
+                allowOutsideClick: true,
+                allowEscapeKey: true
             }).then((result) => {
                 if (result.isConfirmed) {
                     Livewire.dispatch('update_routine')

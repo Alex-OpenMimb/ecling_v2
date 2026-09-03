@@ -52,6 +52,7 @@ class DatatableSchedule extends Component
             'schedules.status',
             'headquarters.id as headquarter_id',
             'clients_has_equipments.id as equipment_id',
+            'clients_has_equipments.internal_id as internal_id',
             'equipment_classes.id as equipment_class_id'
             ,'preventive_routines.name as preventive_routine_name'
             ,'headquarters.name as headquarter_name')
@@ -67,7 +68,7 @@ class DatatableSchedule extends Component
                     ->where('clients_has_equipments.preventive_services',true);
             })
             ->where(function ($query) use ($queries){
-                $query->orWhere('clients_has_equipments.serial','like','%'.$queries.'%')
+                $query->orWhere('clients_has_equipments.internal_id','like','%'.$queries.'%')
                     ->orWhere('clients.name','like','%'.$queries.'%')
                     ->orWhere('equipments.name','like','%'.$queries.'%')
                     ->orWhere('equipment_classes.name','like','%'.$queries.'%')

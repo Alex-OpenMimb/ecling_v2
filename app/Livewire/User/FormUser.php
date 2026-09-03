@@ -25,6 +25,8 @@ class FormUser extends Component
     public $password;
     public $document;
 
+    public $slug;
+
     #[Locked]
     public $id;
 
@@ -49,6 +51,7 @@ class FormUser extends Component
 
     public function updateOrStore( $actionType )
     {
+        $this->slug = Str::slug($this->name, '-');
         $this->validate();
         if( $actionType === 'create' ){
             $this->validate([
@@ -89,7 +92,9 @@ class FormUser extends Component
     {
 
         return [
-            'name' => 'required|min:5',
+            'name' => ['required', 'string', 'min:5',
+             Rule::unique('users')->ignore($this->user)
+            ],
             'email' => [
                 'required',
                 'regex:/^[\w.-]+@[a-zA-Z\d.-]+\.[a-zA-Z]{2,}$/',
@@ -97,7 +102,8 @@ class FormUser extends Component
             ],
             'roleId'=>'required|numeric|in:2,3,4',
             'phone'=>'min:7|max:10',
-            'document'=>[Rule::unique('users')->ignore($this->user),'nullable']
+            'document'=>[Rule::unique('users')->ignore($this->user),'nullable'],
+            'slug' => [Rule::unique('users', 'slug')->ignore($this->user)],
         ];
     }
 
@@ -105,8 +111,10 @@ class FormUser extends Component
     {
         return [
             'name.required' => 'El :attribute es requerido.',
+            'name.unique' => 'El :attribute debe ser único.',
             'name.min' => 'El :attribute debe ser minimo de 5 caracteres.',
             'email.required' => 'El :attribute es requerido.',
+            'email.unique' => 'El :attribute debe ser único.',
             'roleId.required' => 'El rol es requerido.',
             'email.regex' => 'El :attribute no es valido.',
             'password.regex' => 'La contraseña debe tener al menos una letra mayúscula, una minúscula y un número.',
@@ -114,6 +122,7 @@ class FormUser extends Component
             'phone.min' => 'El teléfono debe tener al menos 7 números.',
             'phone.max' => 'El teléfono debe tener máximo 10 números.',
             'document.unique' => 'El documento ya está en uso.',
+            'slug.unique' => 'Ya existe un usuario con este nombre.',
 
         ];
     }

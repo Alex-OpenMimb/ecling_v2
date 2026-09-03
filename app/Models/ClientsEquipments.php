@@ -20,8 +20,6 @@ class ClientsEquipments extends Model
             'status',
             'preventive_services',
             'preventive_services_first', //Flag to validate if the preventive routine has assigned already first time
-            'plate_photo',
-            'perimeter_photo',
             'equipment_id', //Relations many has many
             'client_id', //Relations many has many
             'location_id',
@@ -29,6 +27,14 @@ class ClientsEquipments extends Model
             'schedule_assigned',
     ];
 
+    public function client()
+    {
+        return $this->belongsTo(Client::class, 'client_id');
+    }
+    public function equipment()
+    {
+        return $this->belongsTo(Equipment::class, 'equipment_id');
+    }
 
     public function location()
     {
@@ -62,6 +68,10 @@ class ClientsEquipments extends Model
        return  $this->hasMany( GeneralReport::class );
     }
 
+    public function photos()
+    {
+        return $this->morphMany(Photo::class, 'model');
+    }
 
     ///Stters
     public function observations(): Attribute

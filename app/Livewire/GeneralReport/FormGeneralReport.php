@@ -310,7 +310,6 @@ class FormGeneralReport extends  Component
         $this->preventive_routine = $this->general_report->preventive_routine;
         $preventive_routine_id    = PreventiveRoutine::where('name', $this->preventive_routine )
             ->select('id')->first()->id;
-
         $preventive_activity_ids = PreventiveRoutineActivity::where('preventive_routine_id',$preventive_routine_id)
             ->select('preventive_activity_id')->get()->toArray();
         $this->preventive_activities = PreventiveActivity::whereIn('id',$preventive_activity_ids)->select('id','activity')
